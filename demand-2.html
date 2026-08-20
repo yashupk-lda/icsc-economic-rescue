@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demand 2/6 — Market Builder</title>
+<style>
+:root{--bg:#f7f3eb;--card:#fff;--ink:#17202d;--muted:#667085;--line:#e4dfd5;--accent:#5b5bd6;--accent2:#8b5cf6;--soft:#efefff;--good:#146b42;--goodbg:#eaf7ef;--bad:#9e241b;--badbg:#fff0ed;--warn:#795600;--warnbg:#fff7d6;--dark:#111827}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}a{text-decoration:none;color:inherit}
+.app{max-width:1050px;margin:auto;padding:16px 16px 56px}.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.brand{font-weight:950;letter-spacing:-.03em}
+.stats{display:flex;gap:8px;flex-wrap:wrap}.pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 11px;font-size:13px;font-weight:850}.bar{height:9px;background:#e7e3da;border-radius:999px;overflow:hidden;margin:10px 0 18px}.fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0}
+.card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:clamp(20px,4vw,38px);box-shadow:0 12px 30px rgba(16,24,40,.05)}.eyebrow{font-size:12px;font-weight:950;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+h1{font-size:clamp(34px,6vw,62px);line-height:.97;letter-spacing:-.05em;margin:0 0 15px}h2{font-size:clamp(27px,4vw,43px);line-height:1.04;letter-spacing:-.035em;margin:0 0 13px}p{font-size:18px;line-height:1.5;color:#344054}.big{font-size:23px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.panel{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fff}.soft{background:var(--soft)}.goodbg{background:var(--goodbg)}.warnbg{background:var(--warnbg)}
+.scene{border-radius:20px;padding:18px;background:linear-gradient(135deg,#191f2b,#293143);color:#fff}.scene p{color:#dce2ec}.bigIcon{font-size:60px}.sceneTitle{font-size:22px;font-weight:900;margin-top:8px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.btn{border:0;border-radius:14px;padding:13px 16px;font-weight:900;cursor:pointer;min-height:44px}.primary{background:var(--dark);color:#fff}.secondary{background:#fff;border:1px solid var(--line)}.softBtn{background:var(--soft);color:#4039b2}
+.answers{display:grid;gap:10px;margin:16px 0}.ans{padding:15px;border:1px solid var(--line);border-radius:14px;background:#fff;text-align:left;cursor:pointer;font-weight:760;min-height:52px}.ans:hover{background:#fcfbff;border-color:#b5b1ef}.ans.correct{background:var(--goodbg);border-color:#83c7a3}.ans.wrong{background:var(--badbg);border-color:#e0a09a}
+.feedback{display:none;padding:14px 15px;border-radius:14px;margin:14px 0;line-height:1.45}.feedback.show{display:block}.feedback.good{background:var(--goodbg);color:var(--good)}.feedback.bad{background:var(--badbg);color:var(--bad)}.feedback.hint{background:var(--warnbg);color:var(--warn)}
+.definition{border-left:5px solid var(--accent);padding:14px 16px;background:#fbfaff;border-radius:0 14px 14px 0;margin:16px 0}.definition .term{font-size:24px;font-weight:950;margin-bottom:6px}.formal{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:14px;color:#4f5868}.formal b{color:var(--accent)}
+.table{width:100%;border-collapse:collapse}.table th,.table td{padding:10px;border-bottom:1px solid var(--line);text-align:center}.table th:first-child,.table td:first-child{text-align:left}
+.range{width:100%;accent-color:#8b85ff}.value{font-size:40px;font-weight:950}.meter{height:14px;background:#ece9e2;border-radius:999px;overflow:hidden}.meter i{display:block;height:100%;background:linear-gradient(90deg,#5b5bd6,#8b5cf6)}
+.chartwrap{background:#fbfbfd;border:1px solid var(--line);border-radius:18px;padding:8px}canvas{width:100%;height:320px;display:block}.labels{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.tag{padding:7px 10px;border-radius:999px;background:#f1f1ff;font-size:12px;font-weight:850}
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden}.piece{position:absolute;width:10px;height:14px;animation:fall 1.25s linear forwards}@keyframes fall{to{transform:translateY(105vh) rotate(700deg);opacity:0}}.hidden{display:none!important}
+@media(max-width:760px){.grid2,.grid3{grid-template-columns:1fr}canvas{height:270px}.bigIcon{font-size:52px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <a href="index.html" class="brand">ECONOMICS RESCUE <span style="color:#777">/ DEMAND 2/6</span></a>
+    <div class="stats"><div class="pill">⭐ <span id="xp">0</span> XP</div><div class="pill">🔥 <span id="streak">0</span></div><div class="pill">🔊 <span id="snd">ON</span></div></div>
+  </div>
+  <div class="bar"><div class="fill" id="fill"></div></div>
+  <main class="card" id="main"></main>
+  <div class="actions">
+    <button class="btn secondary" id="back">← Back</button>
+    <button class="btn softBtn" id="hint">I don't get it</button>
+    <button class="btn softBtn" id="sound">Sound on/off</button>
+    <button class="btn primary" id="next">Continue →</button>
+  </div>
+</div>
+<div id="confetti" class="confetti hidden"></div>
+
+<script>
+const KEY="econ_demand_m2_v2";
+let state=Object.assign({i:0,xp:0,streak:0,sound:true,answered:{},rewarded:{}},JSON.parse(localStorage.getItem(KEY)||"{}"));
+
+const screens=[
+ {t:"intro"},
+ {t:"defineDemand"},
+ {t:"q",q:"You desperately want a ₹2 crore Ferrari but cannot afford one. Is that demand in economics?",a:["Yes, because I want it","No, because demand requires willingness AND ability to buy","Only if Ferrari lowers the price tomorrow"],c:1,h:"Economics demand is not the same as desire."},
+ {t:"individual"},
+ {t:"q",q:"Riya buys 2 iced coffees per week at ₹150. Whose demand are we describing?",a:["Individual demand","Market demand","Derived demand"],c:0,h:"We're talking about one specific consumer."},
+ {t:"market"},
+ {t:"marketAdd"},
+ {t:"q",q:"At ₹100, Asha demands 2 burgers, Ravi 3, and Dev 1. Market demand is:",a:["3","5","6"],c:2,h:"Add individual quantities demanded at the SAME price."},
+ {t:"typesIntro"},
+ {t:"typeCards1"},
+ {t:"typeCards2"},
+ {t:"typeQuiz"},
+ {t:"priceIncomeCross"},
+ {t:"functionIntro"},
+ {t:"machine"},
+ {t:"schedule"},
+ {t:"curve"},
+ {t:"marketCurve"},
+ {t:"board"},
+ {t:"boss"},
+ {t:"finish"}
+];
+
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function tone(kind){if(!state.sound)return;try{const C=new(window.AudioContext||window.webkitAudioContext)(),o=C.createOscillator(),g=C.createGain();const m={click:[430,520,.05],good:[620,880,.10],bad:[220,170,.12],win:[523,1046,.24]}[kind]||[430,520,.05];o.connect(g);g.connect(C.destination);o.frequency.setValueAtTime(m[0],C.currentTime);o.frequency.exponentialRampToValueAtTime(m[1],C.currentTime+m[2]);g.gain.setValueAtTime(.035,C.currentTime);g.gain.exponentialRampToValueAtTime(.0001,C.currentTime+m[2]);o.start();o.stop(C.currentTime+m[2])}catch(e){}}
+function burst(){const c=document.getElementById("confetti");c.innerHTML="";c.classList.remove("hidden");const cs=["#5b5bd6","#ffd166","#34d399","#60a5fa","#f472b6"];for(let i=0;i<30;i++){const d=document.createElement("div");d.className="piece";d.style.left=Math.random()*100+"vw";d.style.top=(-20-Math.random()*30)+"px";d.style.background=cs[Math.floor(Math.random()*cs.length)];c.appendChild(d)}setTimeout(()=>c.classList.add("hidden"),1300)}
+function header(){xp.textContent=state.xp;streak.textContent=state.streak;snd.textContent=state.sound?"ON":"OFF";fill.style.width=((state.i+1)/screens.length*100)+"%";back.disabled=state.i===0;next.textContent=state.i===screens.length-1?"Back to Demand map →":"Continue →"}
+function reward(n=45){if(!state.rewarded[state.i]){state.rewarded[state.i]=1;state.xp+=n;burst()}state.streak++;tone("good");save();header()}
+function miss(){state.streak=0;tone("bad");save();header()}
+function bindMCQ(s){document.querySelectorAll(".ans").forEach(b=>b.addEventListener("click",()=>{if(state.answered[state.i])return;const ok=Number(b.dataset.i)===s.c,f=document.getElementById("fb");if(ok){b.classList.add("correct");f.className="feedback show good";f.textContent="✓ Correct.";state.answered[state.i]=1;reward(45)}else{b.classList.add("wrong");f.className="feedback show bad";f.textContent="Not quite. "+s.h;miss();setTimeout(()=>b.classList.remove("wrong"),600)}}))}
+
+function definition(term,plain,formal,icon){
+  return `<div class="definition"><div class="term">${icon||""} ${term}</div><div>${plain}</div><div class="formal"><b>ISC wording:</b> ${formal}</div></div>`;
+}
+
+function render(){
+  header();
+  const s=screens[state.i],m=main;
+
+  if(s.t==="intro") m.innerHTML=`<div class="eyebrow">Mission 2 • Market Builder</div><h1>How does “I want one” become “the market wants 10,000”?</h1><p class="big">We start with the meaning of demand. Then one buyer. Then many buyers. Only after that do we learn the labels.</p><div class="scene"><div class="bigIcon">👤 ➕ 👤 ➕ 👤 = 👥</div><p>One person's demand is not the same thing as market demand.</p></div>`;
+
+  else if(s.t==="defineDemand") m.innerHTML=`<div class="eyebrow">First definition</div><h2>What does “demand” actually mean?</h2>
+    ${definition("Demand","Wanting something is not enough. In economics, demand means you are both <b>willing</b> and <b>able</b> to buy a quantity of a good at a given price during a given period.","The quantity of a commodity that a consumer is willing and able to purchase at various prices during a given period of time.","🛒")}
+    <div class="grid2"><div class="panel goodbg"><b>I want a ₹50 sandwich and I can buy it.</b><p>Economic demand ✅</p></div><div class="panel warnbg"><b>I want a private jet but have ₹300.</b><p>Desire, not effective demand ❌</p></div></div>`;
+
+  else if(s.t==="q") {m.innerHTML=`<div class="eyebrow">Check the definition</div><h2>${s.q}</h2><div class="answers">${s.a.map((x,i)=>`<button class="ans" data-i="${i}">${x}</button>`).join("")}</div><div id="fb" class="feedback"></div>`;setTimeout(()=>bindMCQ(s),0)}
+
+  else if(s.t==="individual") m.innerHTML=`<div class="eyebrow">One buyer</div><h2>Individual demand</h2>
+    ${definition("Individual demand","How much <b>one specific consumer</b> is willing and able to buy at different prices.","The quantity of a commodity demanded by an individual consumer at various prices during a given period.","👤")}
+    <div class="panel soft"><b>Example:</b><p>At ₹150, Riya buys 2 iced coffees per week. At ₹100, she buys 4. That's <b>Riya's individual demand</b>.</p></div>`;
+
+  else if(s.t==="market") m.innerHTML=`<div class="eyebrow">Many buyers</div><h2>Market demand</h2>
+    ${definition("Market demand","Add together what <b>all consumers in the market</b> demand at each price.","The total quantity of a commodity demanded by all consumers in the market at various prices during a given period.","👥")}
+    <div class="panel warnbg"><b>Key phrase:</b><p>Market demand is the <b>sum of individual demands at the same price</b>.</p></div>`;
+
+  else if(s.t==="marketAdd") m.innerHTML=`<div class="eyebrow">Build the market</div><h2>Same price. Add the buyers.</h2>
+    <table class="table"><tr><th>At price ₹100</th><th>Quantity demanded</th></tr><tr><td>👩 Asha</td><td>2</td></tr><tr><td>👨 Ravi</td><td>3</td></tr><tr><td>🧑 Dev</td><td>1</td></tr><tr style="font-weight:950;background:#eaf7ef"><td>👥 Market</td><td>6</td></tr></table>
+    <div class="feedback show hint">This is <b>horizontal summation</b>: add the quantities demanded by consumers at each price.</div>`;
+
+  else if(s.t==="typesIntro") m.innerHTML=`<div class="eyebrow">Now the labels</div><h2>“Types of demand” are just different ways demand can arise.</h2><p>Don't memorize the names first. Learn what each name is describing.</p><div class="feedback show hint">You already know two: <b>individual demand</b> and <b>market demand</b>.</div>`;
+
+  else if(s.t==="typeCards1") m.innerHTML=`<div class="eyebrow">Types of demand</div><div class="grid2">
+    <div class="panel">${definition("Ex-ante demand","What consumers <b>plan or intend</b> to buy before the period happens.","Expected or planned demand for a commodity during a future period.","🔮")}</div>
+    <div class="panel">${definition("Ex-post demand","What consumers <b>actually bought</b> after the period is over.","Actual demand realized during a past period.","🧾")}</div>
+  </div>
+  <div class="panel soft" style="margin-top:14px"><b>Example:</b><p>You plan to buy 4 movie tickets this weekend = ex-ante. You end up buying 2 = ex-post.</p></div>`;
+
+  else if(s.t==="typeCards2") m.innerHTML=`<div class="eyebrow">More types</div><div class="grid3">
+    <div class="panel">${definition("Joint demand","Two or more goods are demanded <b>together</b> because they are used together.","Demand for complementary goods used jointly.","🚗⛽")}</div>
+    <div class="panel">${definition("Derived demand","A good is demanded because it helps produce or provide <b>something else</b>.","Demand for a factor/input arising from demand for the final product.","🏗️🧱")}</div>
+    <div class="panel">${definition("Composite demand","The <b>same good</b> is demanded for several different uses.","Demand for a commodity that has multiple uses.","⚡🏠🏭")}</div>
+  </div>`;
+
+  else if(s.t==="typeQuiz") renderTypeQuiz();
+
+  else if(s.t==="priceIncomeCross") m.innerHTML=`<div class="eyebrow">Another useful classification</div><h2>What variable are we studying?</h2>
+    <div class="grid3">
+      <div class="panel">${definition("Price demand","How quantity demanded changes when the good's <b>own price</b> changes, other things equal.","Relationship between own price and quantity demanded.","🏷️")}</div>
+      <div class="panel">${definition("Income demand","How demand changes when the consumer's <b>income</b> changes.","Relationship between consumer income and quantity demanded.","💰")}</div>
+      <div class="panel">${definition("Cross demand","How demand for one good changes when the <b>price of a related good</b> changes.","Relationship between demand for one commodity and the price of another commodity.","☕🫖")}</div>
+    </div>`;
+
+  else if(s.t==="functionIntro") m.innerHTML=`<div class="eyebrow">Demand function</div><h2>Demand has more than one cause.</h2>
+    ${definition("Demand function","A compact way to say quantity demanded depends on several variables.","A functional relationship between quantity demanded and its determinants.","⚙️")}
+    <div class="board"><b>Qd = f(Px, Y, Pr, T, E, N, ...)</b><p style="font-size:15px">Px = own price • Y = income • Pr = prices of related goods • T = tastes • E = expectations • N = number of buyers</p></div>
+    <div class="feedback show hint">The formula is not asking you to calculate anything. It's saying: <b>these things can influence demand.</b></div>`;
+
+  else if(s.t==="machine") { m.innerHTML=`<div class="eyebrow">Demand Machine</div><h2>Change one cause at a time.</h2>
+    <div class="grid2">
+      <div class="panel">
+        <label><b>Burger price</b> <span id="bp">₹200</span></label><input id="burger" class="range" type="range" min="100" max="300" step="25" value="200">
+        <label><b>Your monthly fun-money</b> <span id="inc">₹5,000</span></label><input id="income" class="range" type="range" min="3000" max="8000" step="500" value="5000">
+        <label><b>Pizza price (substitute)</b> <span id="pp">₹250</span></label><input id="pizza" class="range" type="range" min="150" max="500" step="25" value="250">
+      </div>
+      <div class="scene"><div style="font-size:16px;color:#cbd5e1">BURGERS DEMANDED / MONTH</div><div class="value" id="qd" style="color:white">4</div><p id="story">This is an illustrative demand model. Change one slider and watch which determinant moved.</p></div>
+    </div>
+    <div class="feedback show hint">The exact numbers are illustrative. The point is the direction of the relationship.</div>`;
+    setTimeout(initMachine,0); }
+
+  else if(s.t==="schedule") m.innerHTML=`<div class="eyebrow">Demand schedule</div><h2>A schedule is just a table.</h2>
+    ${definition("Demand schedule","A table showing quantities demanded at different prices.","A tabular statement showing different quantities of a commodity demanded at different prices.","📋")}
+    <table class="table"><tr><th>Price</th><th>Riya's quantity demanded</th></tr><tr><td>₹200</td><td>1</td></tr><tr><td>₹150</td><td>2</td></tr><tr><td>₹100</td><td>4</td></tr><tr><td>₹50</td><td>7</td></tr></table>`;
+
+  else if(s.t==="curve") { m.innerHTML=`<div class="eyebrow">From schedule to curve</div><h2>Plot the same table.</h2><div class="chartwrap"><canvas id="curve" width="800" height="320"></canvas></div><div class="labels"><span class="tag">Y-axis = Price</span><span class="tag">X-axis = Quantity demanded</span><span class="tag">D = individual demand curve</span></div><div class="feedback show hint">The curve contains the same information as the schedule — only drawn.</div>`;
+    setTimeout(drawIndividualCurve,0); }
+
+  else if(s.t==="marketCurve") { m.innerHTML=`<div class="eyebrow">Derive market demand</div><h2>Add individual quantities at every price.</h2>
+    <table class="table"><tr><th>Price</th><th>Asha</th><th>Ravi</th><th>Market</th></tr><tr><td>₹200</td><td>1</td><td>1</td><td><b>2</b></td></tr><tr><td>₹150</td><td>2</td><td>3</td><td><b>5</b></td></tr><tr><td>₹100</td><td>4</td><td>5</td><td><b>9</b></td></tr><tr><td>₹50</td><td>7</td><td>8</td><td><b>15</b></td></tr></table>
+    <div class="chartwrap" style="margin-top:14px"><canvas id="marketCurve" width="800" height="320"></canvas></div><div class="labels"><span class="tag">D₁ = Asha</span><span class="tag">D₂ = Ravi</span><span class="tag">Dₘ = market</span></div>
+    <div class="feedback show hint"><b>Market demand curve = horizontal summation of individual demand curves.</b></div>`;
+    setTimeout(drawMarketCurve,0); }
+
+  else if(s.t==="board") m.innerHTML=`<div class="eyebrow">Turn it into marks</div><h2>Board-ready distinction</h2>
+    <div class="grid2"><div class="panel"><b>Individual demand</b><p>Quantity demanded by one consumer at various prices during a given period.</p></div><div class="panel"><b>Market demand</b><p>Total quantity demanded by all consumers at various prices during a given period.</p></div></div>
+    <div class="board"><b>Derivation:</b> Add individual quantities demanded at each price. Plot the resulting market quantities against price to obtain the market demand curve.</div>`;
+
+  else if(s.t==="boss") renderBoss();
+
+  else m.innerHTML=`<div class="eyebrow">Mission complete</div><h1>Market Builder 🏗️</h1><p class="big">You now know what demand means, the major types of demand, what a demand function says, how a demand schedule becomes a curve, and how individuals become a market.</p><div class="feedback show good">Next mission: Why does the demand curve slope downward?</div>`;
+  save();
+}
+
+function renderTypeQuiz(){
+ const qs=[
+  ["Cars and petrol are commonly used together.",["Joint demand","Composite demand","Derived demand"],0,"Two goods are demanded together."],
+  ["Demand for construction workers rises because more houses are being built.",["Joint demand","Derived demand","Composite demand"],1,"Worker demand comes from demand for the final output."],
+  ["Electricity is used by homes, factories and offices.",["Derived demand","Composite demand","Ex-post demand"],1,"The same good has multiple uses."],
+  ["A retailer forecasts 500 umbrellas will sell next month.",["Ex-ante demand","Ex-post demand","Market demand"],0,"This is planned/expected future demand."],
+  ["Actual umbrella sales last month were 430.",["Ex-ante demand","Ex-post demand","Joint demand"],1,"This is realized past demand."]
+ ]; let i=0,score=0;
+ main.innerHTML=`<div class="eyebrow">Name the idea</div><h2>Don't memorize the example.</h2><div id="typeBox"></div><div id="typeFb" class="feedback"></div>`;
+ function show(){const q=qs[i];typeBox.innerHTML=`<div class="scene"><p class="big">${q[0]}</p></div><div class="answers">${q[1].map((a,j)=>`<button class="ans" data-t="${j}">${a}</button>`).join("")}</div>`;typeBox.querySelectorAll(".ans").forEach(b=>b.onclick=()=>{if(+b.dataset.t===q[2]){score++;typeFb.className="feedback show good";typeFb.textContent="✓ "+q[3];tone("good")}else{typeFb.className="feedback show bad";typeFb.textContent="No. "+q[3];tone("bad")}i++;if(i<qs.length)setTimeout(()=>{typeFb.className="feedback";show()},420);else{typeBox.innerHTML=`<div class="panel ${score>=4?"goodbg":"warnbg"}"><h2>${score}/5</h2><p>${score>=4?"Good. You identified the structure across different examples.":"Repeat these later; the nouns should not be the clue."}</p></div>`;if(!state.rewarded.typequiz){state.rewarded.typequiz=1;state.xp+=score*20;save();header()}}})}
+ show()
+}
+
+function initMachine(){
+ const b=burger,i=income,p=pizza;
+ function update(){
+   const bpv=+b.value, iv=+i.value, ppv=+p.value;
+   let val=4 + (200-bpv)/50 + (iv-5000)/1500 + (ppv-250)/125;
+   val=Math.max(0,Math.round(val));
+   bp.textContent="₹"+bpv;inc.textContent="₹"+iv.toLocaleString();pp.textContent="₹"+ppv;qd.textContent=val;
+ }
+ [b,i,p].forEach(x=>x.addEventListener("input",()=>{update();tone("click")})); update();
+}
+
+function axes(ctx,w,h,xlab,ylab){const p=58;ctx.strokeStyle="#98a2b3";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(p,18);ctx.lineTo(p,h-p);ctx.lineTo(w-18,h-p);ctx.stroke();ctx.fillStyle="#475467";ctx.font="bold 14px system-ui";ctx.fillText(ylab,8,24);ctx.fillText(xlab,w-190,h-16);return p}
+function drawCurve(ctx,pts,color,label){ctx.strokeStyle=color;ctx.lineWidth=4;ctx.beginPath();pts.forEach(([x,y],idx)=>idx?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();const last=pts[pts.length-1];ctx.fillStyle=color;ctx.font="bold 14px system-ui";ctx.fillText(label,last[0]+8,last[1])}
+function drawIndividualCurve(){const c=curve,ctx=c.getContext("2d"),w=c.width,h=c.height;axes(ctx,w,h,"QUANTITY DEMANDED","PRICE");drawCurve(ctx,[[180,72],[270,115],[390,165],[535,220]],"#5b5bd6","D")}
+function drawMarketCurve(){const c=marketCurve,ctx=c.getContext("2d"),w=c.width,h=c.height;axes(ctx,w,h,"QUANTITY DEMANDED","PRICE");drawCurve(ctx,[[150,72],[220,115],[320,165],[440,220]],"#888","D₁");drawCurve(ctx,[[170,72],[250,115],[360,165],[490,220]],"#16a085","D₂");drawCurve(ctx,[[260,72],[390,115],[540,165],[700,220]],"#5b5bd6","Dₘ")}
+
+function renderBoss(){
+ const qs=[
+  ["Wanting a product without ability to pay is:",["Economic demand","Desire only"],1],
+  ["Demand of one consumer:",["Individual demand","Market demand"],0],
+  ["Demand of all consumers together:",["Market demand","Derived demand"],0],
+  ["Cars + petrol:",["Joint demand","Composite demand"],0],
+  ["Demand for steel because cars are produced:",["Derived demand","Ex-post demand"],0],
+  ["Electricity used in homes, factories and offices:",["Composite demand","Joint demand"],0],
+  ["Forecast demand for next month:",["Ex-ante","Ex-post"],0],
+  ["Actual sales last month:",["Ex-post","Cross demand"],0],
+  ["Market demand curve is obtained by:",["Adding individual quantities at each price","Adding all prices"],0]
+ ];let i=0,score=0;
+ main.innerHTML=`<div class="eyebrow">Boss battle</div><h1>Market Builder check</h1><div id="bossBox"></div><div id="bossFb" class="feedback"></div>`;
+ function show(){const q=qs[i];bossBox.innerHTML=`<h2>${i+1}/${qs.length} — ${q[0]}</h2><div class="answers">${q[1].map((a,j)=>`<button class="ans" data-b="${j}">${a}</button>`).join("")}</div>`;bossBox.querySelectorAll(".ans").forEach(b=>b.onclick=()=>{if(+b.dataset.b===q[2]){score++;bossFb.className="feedback show good";bossFb.textContent="✓";tone("good")}else{bossFb.className="feedback show bad";bossFb.textContent="No — go back to the definition, not the example.";tone("bad")}i++;if(i<qs.length)setTimeout(()=>{bossFb.className="feedback";show()},350);else{bossBox.innerHTML=`<div class="panel ${score>=8?"goodbg":"warnbg"}"><h1>${score}/${qs.length}</h1><p>${score>=8?"Market Builder unlocked 🏆":"Repeat the definitions and disguised examples once more."}</p></div>`;if(!state.rewarded.boss){state.rewarded.boss=1;state.xp+=score*25;if(score>=8)burst();save();header()}}})}
+ show()
+}
+
+next.addEventListener("click",()=>{if(state.i<screens.length-1){state.i++;render();window.scrollTo({top:0,behavior:"smooth"})}else{window.location.href="demand.html"}});
+back.addEventListener("click",()=>{if(state.i>0){state.i--;render()}else{window.location.href="demand.html"}});
+hint.addEventListener("click",()=>{const d=document.createElement("div");d.className="feedback show hint";d.innerHTML="<b>Smaller step:</b> "+(screens[state.i].h||"Ignore the label for a moment. Ask: what is this describing in plain English?");main.appendChild(d);tone("click")});
+sound.addEventListener("click",()=>{state.sound=!state.sound;save();header()});
+render();
+</script>
+</body>
+</html>
