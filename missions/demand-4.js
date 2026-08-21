@@ -1,0 +1,287 @@
+(function(){
+const KEY="econ_demand_m4_full_v1";
+let state=Object.assign({i:0,xp:0,streak:0,sound:true,rewarded:{}},JSON.parse(localStorage.getItem(KEY)||"{}"));
+const screens=[
+ {t:"intro"},{t:"utility"},{t:"utilityGame"},{t:"cardinal"},{t:"pizza"},{t:"tuMuExplain"},{t:"tableCalc"},
+ {t:"tuMuGraph"},{t:"relationshipGame"},{t:"transferGame"},{t:"dmuLaw"},{t:"buildLaw"},{t:"assumptions"},
+ {t:"assumptionGame"},{t:"equilibriumIntro"},{t:"buyGame"},{t:"equilibriumTable"},{t:"equilibriumGraph"},
+ {t:"priceChange"},{t:"fixEconomist"},{t:"board"},{t:"boss"},{t:"finish"}
+];
+const PAGE_HELP={"intro": "This mission follows satisfaction one unit at a time. TU is all satisfaction so far; MU is the extra satisfaction added by the next unit.", "utility": "Utility means want-satisfying power, not usefulness or moral goodness. Something can have utility because a consumer wants it.", "cardinal": "Cardinal utility pretends satisfaction can be represented numerically ('utils') so the relationships can be analyzed.", "pizza": "Focus on the NEXT unit. The first can feel great, the next somewhat less, and eventually another unit may add nothing or even make the experience worse.", "tuMuExplain": "TU is cumulative. MU is the change in TU from one unit to the next: MU_n = TU_n − TU_(n−1).", "tableCalc": "Subtract the previous TU from the new TU. Example: if TU rises from 85 to 105, MU of that unit is 20.", "tuMuGraph": "While MU is positive, TU rises. When MU becomes zero, TU is at its maximum. If MU becomes negative, TU falls.", "relationshipGame": "Do not confuse 'MU is falling' with 'TU is falling.' TU can keep rising while MU is positive but getting smaller.", "dmuLaw": "DMU says the marginal utility from successive units tends to diminish under the stated assumptions.", "assumptions": "The law works in a simplified setting: comparable units, reasonably continuous consumption, unchanged tastes and relevant conditions, rational choice, etc.", "equilibriumIntro": "One-good equilibrium is not satiation. The next unit can still have positive MU; equilibrium is where its extra utility just matches the utility sacrificed by spending its price.", "buyGame": "Compare benefit from the NEXT unit with the utility cost of the money spent. Buy while benefit exceeds sacrifice; equilibrium is the balancing margin.", "equilibriumTable": "Find the row where MU_x equals P_x × MU_m. That row is the marginal unit at equilibrium.", "equilibriumGraph": "The equilibrium point is the intersection between declining MU_x and the utility-sacrifice level P_x × MU_m.", "priceChange": "If price falls, the utility sacrifice of another unit falls, so more units can become worth buying.", "board": "Write the DMU answer in a chain: statement → assumptions → what the schedule shows → diagram → explanation.", "boss": "Keep TU, MU, satiation, DMU, and equilibrium separate. Ask exactly which quantity the question is about."};
+const PAGE_LABELS={"intro": "Mission intro", "sim": "Try the situation", "q": "Practice question", "law": "Law of Demand", "graph": "Read the graph", "movement": "Movement along curve", "shift": "Shift of demand", "uber": "Real-world example", "airline": "Real-world example", "determinants": "Determinants", "rapid": "Quick review", "board": "Board answer coach", "boss": "Final Boss", "finish": "Mission complete", "define": "Definition of demand", "isDemand": "Demand or mere desire?", "buildDef": "Build the definition", "individual": "Individual demand", "whoGame": "Individual vs market", "market": "Market demand", "marketBuilder": "Build market demand", "scheduleExplain": "Demand schedule", "plotIndividual": "Plot individual demand", "plotMarket": "Plot market demand", "typesExplain": "Types of demand", "typeDefinitions": "Type definitions", "typeMatch": "Match demand types", "typeSort": "Sort demand types", "picExplain": "Price, income & cross demand", "picSort": "Classify demand relationships", "function": "Demand function", "predict": "Predict demand", "machine": "Demand machine", "fix": "Fix the economist", "graphMeaning": "What the slope means", "fiveReasons": "Five reasons", "dmuGame": "DMU reason", "incomeGame": "Income effect", "subGame": "Substitution effect", "newBuyers": "More consumers", "manyUses": "Several uses", "reasonSort": "Sort the reasons", "chainGame": "Build the causal chain", "exceptionsIntro": "Exceptions intro", "giffen": "Giffen goods", "snob": "Veblen/snob goods", "otherExceptions": "Other exceptions", "exceptionSort": "Sort exceptions", "fakeException": "Real or fake exception?", "upwardGraph": "Exception graph", "fixEconomist": "Fix the economist", "bridge": "Bridge to utility", "utility": "What is utility?", "utilityGame": "Utility practice", "cardinal": "Cardinal utility", "pizza": "DMU discovery", "tuMuExplain": "TU vs MU", "tableCalc": "Calculate MU", "tuMuGraph": "TU & MU graphs", "relationshipGame": "TU/MU relationships", "transferGame": "Transfer practice", "dmuLaw": "Law of DMU", "buildLaw": "Build the law", "assumptions": "Assumptions", "assumptionGame": "Assumption practice", "equilibriumIntro": "One-good equilibrium", "buyGame": "Buy or stop?", "equilibriumTable": "Equilibrium table", "equilibriumGraph": "Equilibrium graph", "priceChange": "Price change", "tennis": "Serve vs backhand", "tennisTable": "Tennis table", "tennisLesson": "What the tennis example means", "vacation": "Beach vs hiking", "vacationTable": "Vacation table", "notEqual": "Balanced ≠ 50–50", "parkIntro": "Theme park setup", "parkGame": "Roller coaster vs go-karts", "parkTable": "Theme park table", "perMinute": "Benefit per minute", "arcade": "Arcade tokens", "arcadeTable": "Arcade table", "resourceRule": "General scarce-resource rule", "foodIntro": "Pepper chicken vs biryani", "moneyGame": "Benefit per rupee", "foodTable": "Food MU table", "muReveal": "Introduce MU/P", "allocation": "Allocate the food budget", "equiReveal": "Reveal equi-marginal utility", "textbookBridge": "Translate into textbook symbols", "textbookSimple": "Simple textbook table", "formal": "Formal law & conditions", "scheduleWalk": "Unequal-price walkthrough", "schedule": "ISC numerical schedule", "dmuVsEqui": "DMU vs equi-marginal", "favoriteTrap": "Favourite ≠ marginal best", "repair": "Repair an allocation", "bundles": "Bundles & preferences", "ic": "Indifference curve", "budget": "Budget line", "equil": "Ordinal equilibrium"};
+function currentScreenType(){
+  const s=screens[state.i];
+  return typeof s==="string"?s:(s&&s.t?s.t:"");
+}
+function pageHelpText(){
+  const s=screens[state.i],t=currentScreenType();
+  if(t==="q" && s && s.h) return `<p><b>What this page is testing:</b> ${s.h}</p><p>Try translating the question into the main rule from this mission before looking at the answer choices.</p>`;
+  const h=PAGE_HELP[t]||"Focus on the main question on this page. Say the idea out loud in ordinary words before using the economics term.";
+  return `<p>${h}</p>`;
+}
+function showPageHelp(){
+  const old=document.getElementById("pageHelpBox");if(old)old.remove();
+  const d=document.createElement("div");d.id="pageHelpBox";d.className="helpBox";
+  d.innerHTML=`<h3>Still confused? Here is this page in slower English.</h3>${pageHelpText()}<p><b>What to do next:</b> Go back to the numbers or choices on the page and identify the one comparison the page is asking you to make.</p>`;
+  $("main").appendChild(d);tone("click");
+}
+function setupMissionNavigation(){
+  const sel=$("pageJump");if(!sel)return;
+  sel.innerHTML=screens.map((s,idx)=>{const t=typeof s==="string"?s:(s.t||"page");const label=PAGE_LABELS[t]||t.replace(/([A-Z])/g," $1");return `<option value="${idx}">${idx+1}. ${label}</option>`}).join("");
+  sel.value=String(state.i);
+  sel.onchange=()=>{state.i=+sel.value;save();render();window.scrollTo({top:0,behavior:"smooth"})};
+}
+function syncMissionNavigation(){const sel=$("pageJump");if(sel)sel.value=String(state.i)}
+
+function $(id){return document.getElementById(id)}
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function tone(kind){if(!state.sound)return;try{const C=new(window.AudioContext||window.webkitAudioContext)(),o=C.createOscillator(),g=C.createGain(),m={click:[430,520,.05],good:[620,880,.10],bad:[220,170,.12],win:[523,1046,.24]}[kind]||[430,520,.05];o.connect(g);g.connect(C.destination);o.frequency.setValueAtTime(m[0],C.currentTime);o.frequency.exponentialRampToValueAtTime(m[1],C.currentTime+m[2]);g.gain.setValueAtTime(.035,C.currentTime);g.gain.exponentialRampToValueAtTime(.0001,C.currentTime+m[2]);o.start();o.stop(C.currentTime+m[2])}catch(e){}}
+function burst(){const c=$("confetti");c.innerHTML="";c.classList.remove("hidden");const cs=["#5b5bd6","#ffd166","#34d399","#60a5fa","#f472b6"];for(let i=0;i<28;i++){const d=document.createElement("div");d.className="piece";d.style.left=Math.random()*100+"vw";d.style.top=(-20-Math.random()*30)+"px";d.style.background=cs[Math.floor(Math.random()*cs.length)];c.appendChild(d)}setTimeout(()=>c.classList.add("hidden"),1300)}
+function reward(k,n=45){if(!state.rewarded[k]){state.rewarded[k]=1;state.xp+=n;burst()}state.streak++;tone("good");save();header()}
+function miss(){state.streak=0;tone("bad");save();header()}
+function header(){syncMissionNavigation();$("xp").textContent=state.xp;$("streak").textContent=state.streak;$("snd").textContent=state.sound?"ON":"OFF";$("fill").style.width=((state.i+1)/screens.length*100)+"%";$("back").disabled=state.i===0;$("next").textContent=state.i===screens.length-1?"Continue to Demand 5 →":"Continue →"}
+function fb(ok,title,why){const f=$("fb");f.className="feedback show "+(ok?"good":"bad");f.innerHTML=`<b>${ok?"✓":"✗"} ${title}</b><br>${why}`}
+function def(term,plain,formal,icon){return `<div class="definition"><div class="term">${icon||""} ${term}</div><div>${plain}</div><div class="formal"><b>ISC wording:</b> ${formal}</div></div>`}
+function quiz(title,qs,key){
+ let i=0,score=0;$("main").innerHTML=`<div class="eyebrow">Game</div><h2>${title}</h2><div id="g"></div><div id="fb" class="feedback"></div>`;
+ function show(){const q=qs[i],choices=shuffle(q.a.map((text,j)=>({text,ok:j===q.c})));$("g").innerHTML=`<div class="scene"><p class="big">${q.q}</p></div><div class="answers">${choices.map((x,j)=>`<button class="ans" data-x="${j}">${x.text}</button>`).join("")}</div>`;document.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{const ok=choices[+b.dataset.x].ok;if(ok)score++;fb(ok,ok?"Correct":"Not quite",q.why);ok?tone("good"):miss();i++;if(i<qs.length)setTimeout(()=>{$("fb").className="feedback";show()},700);else setTimeout(()=>{$("g").innerHTML=`<div class="panel ${score>=Math.ceil(qs.length*.75)?"goodbg":"warnbg"}"><div class="score">${score}/${qs.length}</div><p>${score>=Math.ceil(qs.length*.75)?"You can apply the rule, not just repeat it.":"Use the explanations to repair the weak spots."}</p></div>`;reward(key,score*18)},450)})}
+ show()
+}
+function render(){
+ header();const t=screens[state.i].t,m=$("main");
+ if(t==="intro")m.innerHTML=`<div class="eyebrow">Mission 4 • One More Minute</div><h1>How much is one more minute, sip, episode or add-on worth to you?</h1><p class="big">This mission turns “utility” from a memorized word into something you can calculate, graph and use in situations you already know from real life.</p><div class="scene"><div class="bigIcon">🚿 → 💧 → 🎮 → 🍟</div><p>Hot showers, cold water, gaming and food add-ons all hide the same idea: the next unit can matter less than the previous one.</p></div>`;
+ else if(t==="utility")m.innerHTML=`<div class="eyebrow">Definition first</div><h2>Utility does not mean “healthy” or “good.”</h2>${def("Utility","The want-satisfying power of a good or service. If it satisfies a want, it can have utility to that consumer.","The want-satisfying capacity of a commodity.","🙂")}<div class="grid3"><div class="panel"><div class="bigIcon">🍕</div><b>Pizza</b><p>Can give utility if you want food.</p></div><div class="panel"><div class="bigIcon">☂️</div><b>Umbrella</b><p>Can give utility when it rains.</p></div><div class="panel"><div class="bigIcon">💊</div><b>Medicine</b><p>Can give utility by satisfying a health-related want.</p></div></div>`;
+ else if(t==="utilityGame")quiz("Does it have utility?",[
+  {q:"A person enjoys very spicy chips even though their doctor says they should avoid them.",a:["They can still have utility to that person","No, harmful things can never have utility","Utility means nutritional value"],c:0,why:"Utility is about want-satisfaction, not moral or medical goodness."},
+  {q:"An umbrella on a dry sunny day gives you no satisfaction today.",a:["Its utility to you right now may be very low","It must always have high utility","Utility equals market price"],c:0,why:"Utility is subjective and depends on the consumer and circumstances."},
+  {q:"Two people value the same concert ticket very differently.",a:["Possible — utility is subjective","Impossible — utility is identical for everyone","Utility is fixed by the seller"],c:0,why:"Different consumers can obtain different satisfaction from the same commodity."}
+ ],"utilityGame")
+ else if(t==="cardinal")m.innerHTML=`<div class="eyebrow">Cardinal utility</div><h2>For this model, pretend satisfaction can be measured.</h2>${def("Cardinal utility","A simplifying approach that treats utility as if it can be expressed in numerical units called <b>utils</b>.","Utility is assumed to be measurable in cardinal numbers for analytical purposes.","🔢")}<div class="feedback show hint">“50 utils” is not a real happiness meter. It's a model that lets us compare totals and changes.</div>`;
+ else if(t==="pizza"){renderPizza()}
+ else if(t==="tuMuExplain")m.innerHTML=`<div class="eyebrow">Two ideas</div><h2>Total vs extra.</h2><div class="grid2"><div class="panel">${def("Total Utility (TU)","Your <b>total satisfaction</b> from all units consumed so far.","The total satisfaction derived from consumption of a given quantity of a commodity.","Σ")}</div><div class="panel">${def("Marginal Utility (MU)","The <b>extra satisfaction</b> from one additional unit.","The addition to total utility from consumption of one more unit.","＋1")}</div></div><div class="definition"><div class="term">MUₙ = TUₙ − TUₙ₋₁</div><div>If TU rises from 85 to 105 after the third unit, MU of that unit = <b>20</b>.</div></div>`;
+ else if(t==="tableCalc")renderTableCalc()
+ else if(t==="tuMuGraph")renderTuMuGraphs()
+ else if(t==="relationshipGame")quiz("What happens to TU?",[
+  {q:"MU is +12.",a:["TU rises","TU is maximum","TU falls"],c:0,why:"Positive MU adds satisfaction, so TU rises."},
+  {q:"MU falls from +20 to +8 but stays positive.",a:["TU still rises, but more slowly","TU must fall","TU becomes zero"],c:0,why:"Falling MU does not mean falling TU. As long as MU is positive, TU keeps rising."},
+  {q:"MU = 0.",a:["TU is at its maximum","TU is zero","TU must be negative"],c:0,why:"An extra unit adds nothing, so TU stops rising and reaches its maximum."},
+  {q:"MU = −10.",a:["TU falls","TU continues rising","TU becomes infinite"],c:0,why:"Negative marginal utility subtracts from total satisfaction."}
+ ],"relationshipGame")
+ else if(t==="transferGame")quiz("Same economics, completely different situation",[
+  {q:"You start gaming after finishing homework. Hour 1 is exciting, hour 2 is still fun, hour 5 feels repetitive. What pattern is this?",a:["Diminishing marginal utility","Market demand","Derived demand","Income effect"],c:0,why:"Each additional hour gives less extra satisfaction than the earlier one."},
+  {q:"You binge a show. Episode 1 is great; by episode 6 you're mostly watching because autoplay started it.",a:["Diminishing marginal utility","Cross demand","Ex-post demand","Substitution effect"],c:0,why:"The extra enjoyment from another episode has fallen."},
+  {q:"Your phone is at 1% and getting to 20% feels extremely valuable. Going from 80% to 100% feels much less urgent. Best interpretation?",a:["A useful analogy for diminishing marginal benefit","Proof that batteries obey the Law of DMU literally","A Giffen good","Market equilibrium"],c:0,why:"It is a good intuition analogy: extra value can diminish. For formal utility schedules, use clean units of consumption."},
+  {q:"You have been in a hot shower for 25 minutes and now feel overheated and dry. The extra few minutes have...",a:["Negative marginal utility","Maximum total utility forever","Positive marginal utility","No relation to utility"],c:0,why:"The additional time reduces satisfaction, so MU is negative."}
+ ],"transferGame")
+ else if(t==="dmuLaw")m.innerHTML=`<div class="eyebrow">Law of Diminishing Marginal Utility</div><h2>You already discovered the law.</h2>${def("Law of Diminishing Marginal Utility","As you consume more successive units of the same commodity, the <b>extra satisfaction</b> from each additional unit tends to fall, other things remaining the same.","Other things remaining constant, as a consumer consumes more and more units of a commodity, marginal utility from each successive unit tends to diminish.","📉")}<div class="feedback show hint">The law says <b>MU falls</b>. It does not say TU immediately falls.</div>`;
+ else if(t==="buildLaw")renderBuildLaw()
+ else if(t==="assumptions")m.innerHTML=`<div class="eyebrow">Assumptions of DMU</div><h2>The experiment only makes sense if we keep important things stable.</h2><div class="grid3"><div class="panel"><b>Homogeneous units</b><p>Successive units should be comparable in size and quality.</p></div><div class="panel"><b>Continuous consumption</b><p>No huge time gap that resets the consumer's want.</p></div><div class="panel"><b>Tastes unchanged</b><p>Preferences should not suddenly change mid-experiment.</p></div><div class="panel"><b>Income / prices stable</b><p>Relevant economic conditions shouldn't shift while measuring successive units.</p></div><div class="panel"><b>Reasonable unit size</b><p>Units should not be absurdly tiny or gigantic.</p></div><div class="panel"><b>Rational consumer</b><p>The model assumes purposeful utility-maximizing behaviour.</p></div></div>`;
+ else if(t==="assumptionGame")quiz("Which assumption broke?",[
+  {q:"The first unit is one cookie. The second 'unit' is a box of 30 cookies.",a:["Homogeneous / reasonable units","Continuous consumption","Stable tastes","Consumer equilibrium"],c:0,why:"The units are not comparable."},
+  {q:"You drink one glass of water now and the next glass six hours later after a workout.",a:["Continuous consumption","Homogeneous units","Stable prices","Cardinal utility"],c:0,why:"The long gap and renewed thirst break the continuous-consumption setup."},
+  {q:"Halfway through the test you suddenly develop a strong dislike for the food.",a:["Tastes unchanged","Homogeneous units","Stable income","Derived demand"],c:0,why:"Preferences changed during the experiment."},
+  {q:"The price doubles after the second unit while you're trying to isolate successive utility.",a:["Relevant conditions stable","Homogeneous units","Continuous consumption","Market demand"],c:0,why:"A major price change introduces another influence while the utility sequence is being studied."}
+ ],"assumptionGame")
+ else if(t==="mumIntro")m.innerHTML=`<div class="eyebrow">Before equilibrium</div><h2>What is the marginal utility of money?</h2>${def("Marginal Utility of Money (MUₘ)","How much utility one more rupee is worth to you — or how much utility you give up when you spend that rupee.","The marginal utility derived from an additional unit of money.","₹")}<div class="grid2"><div class="panel"><b>You have ₹10,000 of fun money</b><p>Losing ₹1 barely matters.</p><div class="value">MUₘ low</div></div><div class="panel warnbg"><b>You have ₹100 left for the week</b><p>Every rupee matters more.</p><div class="value">MUₘ high</div></div></div><div class="feedback show hint">In the simple one-commodity equilibrium model, we usually <b>assume MUₘ stays constant</b> while the consumer decides how many units to buy.</div>`;
+ else if(t==="balanceGame")renderBalanceGame()
+ else if(t==="equationReveal")m.innerHTML=`<div class="eyebrow">You just discovered the equation</div><h2>Translate the game into economics.</h2><div class="grid2"><div class="panel goodbg"><div class="mini">UTILITY GAINED</div><div class="value">MUₓ</div><p>Extra satisfaction from the next unit of good X.</p></div><div class="panel warnbg"><div class="mini">UTILITY SACRIFICED</div><div class="value">Pₓ × MUₘ</div><p>Rupees spent × utility value of each rupee.</p></div></div><div class="definition"><div class="term">MUₓ = Pₓ × MUₘ</div><div><b>Extra satisfaction gained = utility sacrificed by spending the money.</b></div><div class="formal">Equivalent form: <b>MUₓ / Pₓ = MUₘ</b>.</div></div><div class="feedback show hint">That equality is the equilibrium margin. Before it, extra units are worth buying; after it, the utility sacrifice is larger than the utility gained.</div>`;
+ else if(t==="equilibriumTable")renderEquilibriumTable()
+ else if(t==="equilibriumGraph")renderEquilibriumGraph()
+ else if(t==="variableGame")renderVariableGame()
+ else if(t==="satiationVsEq")quiz("Satiation or consumer equilibrium?",[
+  {q:"MU of the next unit is 0, so another unit gives no extra satisfaction.",a:["Satiation / TU maximum","Consumer equilibrium necessarily","Market equilibrium","Cross demand"],c:0,why:"MU = 0 describes satiation: another unit adds no utility."},
+  {q:"MUₓ = 40 utils. Price = ₹20. MUₘ = 2 utils per rupee.",a:["Consumer equilibrium","Satiation","Negative utility","No conclusion"],c:0,why:"Utility sacrificed = 20 × 2 = 40 utils, exactly equal to MUₓ."},
+  {q:"At consumer equilibrium, MUₓ is still positive.",a:["Perfectly possible","Impossible — equilibrium requires MUₓ = 0","Only possible for Giffen goods","It means TU is zero"],c:0,why:"Equilibrium is about comparing benefit with the utility cost of spending money. It does not require satiation."},
+  {q:"MUₓ = 25; Pₓ × MUₘ = 40.",a:["Do not buy the additional unit","Buy more","You are at satiation","Price should be ignored"],c:0,why:"The next unit gives 25 utils but costs 40 utils in foregone money utility."}
+ ],"satiationVsEq")
+ else if(t==="fixEconomist")quiz("Fix the bad economist",[
+  {q:"“TU falls whenever MU falls.”",a:["Wrong: TU can keep rising while MU is positive, even if MU is falling","Correct","Wrong: TU never changes","Correct only if price falls"],c:0,why:"The sign of MU matters. Positive MU adds to TU; declining positive MU just makes TU rise more slowly."},
+  {q:"“When MU = 0, TU = 0.”",a:["Wrong: TU is maximum when MU reaches zero","Correct","Wrong: TU must be negative","Correct only for the first unit"],c:0,why:"MU = 0 means the next unit adds nothing; total utility is at its peak."},
+  {q:"“DMU means total satisfaction falls with every extra unit.”",a:["Wrong: marginal utility falls; TU may continue rising","Correct","Wrong: MU must rise","Correct for all normal goods"],c:0,why:"DMU is about the extra satisfaction from successive units."},
+  {q:"“Consumer equilibrium means the consumer has zero utility.”",a:["Wrong: equilibrium means utility is maximized subject to constraints","Correct","Wrong: equilibrium means price is zero","Correct if MU is negative"],c:0,why:"Equilibrium is an optimum choice, not zero satisfaction."},
+  {q:"“MUₓ = Pₓ is always the one-good equilibrium condition.”",a:["Wrong: the full condition is MUₓ = Pₓ × MUₘ; MUₓ = Pₓ is only a shortcut if MUₘ = 1","Correct","Wrong: equilibrium is MUₓ = 0","Correct whenever price is positive"],c:0,why:"The utility cost of spending depends on both price and the marginal utility of money."},
+  {q:"“If MUₓ is positive, the consumer cannot be in equilibrium.”",a:["Wrong: equilibrium can occur with positive MUₓ if it equals Pₓ × MUₘ","Correct","Wrong: positive MU means satiation","Correct only for normal goods"],c:0,why:"Satiation and consumer equilibrium are different ideas."}
+ ],"fixEconomist")
+ else if(t==="board")renderBoard()
+ else if(t==="boss")renderBoss()
+ else m.innerHTML=`<div class="eyebrow">Mission complete</div><h1>Utility Tamer ⚖️</h1><p class="big">You can now recognize diminishing utility in real life, calculate TU and MU, and explain one-good equilibrium as a balance between utility gained and the utility sacrificed by spending money.</p><div class="feedback show good">Next: Spend Your ₹500 — Equi-marginal Utility.</div>`;
+ save()
+}
+function renderPizza(){
+ const mus=[55,38,24,12,3,-8], tus=[];let sum=0;mus.forEach(x=>{sum+=x;tus.push(sum)});
+ const mins=["1 min","3 min","6 min","10 min","15 min","25 min"];
+ $("main").innerHTML=`<div class="eyebrow">Game • Hot shower experiment</div><h2>The longer you stay, does every extra minute feel equally good?</h2>
+ <p>You come in cold and tired. Move through the shower stages and watch the <b>extra satisfaction</b> from staying longer.</p>
+ <input id="slice" class="range" type="range" min="1" max="6" value="1">
+ <div class="grid3" style="margin-top:14px">
+   <div class="panel"><b>Time in shower</b><div id="sv" class="value" style="font-size:30px">1 min</div></div>
+   <div class="panel goodbg"><b>MU of staying longer</b><div id="mv" class="value">55</div></div>
+   <div class="panel soft"><b>TU so far</b><div id="tv" class="value">55</div></div>
+ </div>
+ <div id="fb" class="feedback show hint">At first the hot water feels amazing. Later, another few minutes add less satisfaction. Stay too long and it may become uncomfortable.</div>`;
+ $("slice").oninput=()=>{const i=+$("slice").value-1;$("sv").textContent=mins[i];$("mv").textContent=mus[i];$("tv").textContent=tus[i];
+   if(mus[i]===0)$("fb").innerHTML="<b>MU = 0:</b> staying longer adds nothing. TU is at its maximum.";
+   else if(mus[i]<0)$("fb").innerHTML="<b>MU is negative:</b> now the extra time is actively unpleasant, so TU falls.";
+   else if(i>=3)$("fb").innerHTML="<b>Still positive, but smaller:</b> you still enjoy staying longer, just much less than at the start.";
+   else $("fb").innerHTML="<b>Positive MU:</b> the extra time still adds satisfaction.";
+   tone("click")
+ }
+}
+function renderTableCalc(){
+ const rows=[{u:0,tu:0,mu:null},{u:1,tu:50,mu:50},{u:2,tu:85,mu:35},{u:3,tu:105,mu:20},{u:4,tu:113,mu:8},{u:5,tu:113,mu:0},{u:6,tu:103,mu:-10}];
+ let step=0;
+ const tasks=[
+  {q:"After the first glass of cold water, TU is 50. Before drinking, TU was 0. MU₁ = ?",ans:50,why:"50 − 0 = 50."},
+  {q:"After glass 2, TU is 85; after glass 1 it was 50. MU₂ = ?",ans:35,why:"85 − 50 = 35."},
+  {q:"After glass 2, TU is 85. Glass 3 adds MU = 20. TU after glass 3 = ?",ans:105,why:"85 + 20 = 105."},
+  {q:"TU stays at 113 from glass 4 to glass 5. MU₅ = ?",ans:0,why:"113 − 113 = 0."},
+  {q:"You keep gulping icy water even though you're no longer thirsty. TU falls from 113 to 103. MU₆ = ?",ans:-10,why:"103 − 113 = −10. The extra unit reduced total satisfaction."}
+ ];
+ $("main").innerHTML=`<div class="eyebrow">Game • Cold-water utility table</div><h2>Calculate, don't memorize.</h2>
+ <p>You came in very thirsty. The first few glasses feel great; eventually another icy glass adds nothing, then becomes uncomfortable if you keep drinking too quickly.</p>
+ <div class="plotGrid"><div class="panel"><table class="table"><tr><th>Glasses</th><th>TU</th><th>MU</th></tr>${rows.map(r=>`<tr><td>${r.u}</td><td>${r.tu}</td><td>${r.mu===null?"—":r.mu}</td></tr>`).join("")}</table></div><div id="task" class="panel soft"></div></div><div id="fb" class="feedback"></div>`;
+ function show(){const x=tasks[step];$("task").innerHTML=`<p><b>${x.q}</b></p><input id="num" type="number" style="width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;font-size:20px"><button id="check" class="btn primary" style="margin-top:10px">Check</button>`;$("check").onclick=()=>{const v=Number($("num").value),ok=v===x.ans;fb(ok,ok?"Correct":"Check the change in TU",x.why);if(ok){step++;if(step<tasks.length)setTimeout(()=>{$("fb").className="feedback";show()},600);else reward("tableCalc",100)}else miss()}}
+ show()
+}
+function graphGrid(ctx,w,h,maxX,maxY,yTicks,xlab,ylab){
+ const m=64,pw=w-m-28,ph=h-m-28;
+ ctx.font="12px system-ui";
+ for(let x=0;x<=maxX;x++){const px=m+(x/maxX)*pw;ctx.strokeStyle=x===0?"#98a2b3":"#e4e7ec";ctx.beginPath();ctx.moveTo(px,18);ctx.lineTo(px,h-m);ctx.stroke();ctx.fillStyle="#475467";ctx.textAlign="center";ctx.fillText(String(x),px,h-m+20)}
+ yTicks.forEach(v=>{const py=(h-m)-(v/maxY)*ph;ctx.strokeStyle=v===0?"#98a2b3":"#e4e7ec";ctx.beginPath();ctx.moveTo(m,py);ctx.lineTo(w-28,py);ctx.stroke();ctx.fillStyle="#475467";ctx.textAlign="right";ctx.fillText(String(v),m-8,py+4)});
+ ctx.strokeStyle="#667085";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(m,18);ctx.lineTo(m,h-m);ctx.lineTo(w-28,h-m);ctx.stroke();ctx.fillStyle="#344054";ctx.font="bold 13px system-ui";ctx.textAlign="left";ctx.fillText(ylab,8,16);ctx.textAlign="right";ctx.fillText(xlab,w-28,h-12);ctx.textAlign="left";
+ return {m,pw,ph}
+}
+function renderTuMuGraphs(){
+ const units=[0,1,2,3,4,5,6],tu=[0,50,85,105,113,113,103],mu=[0,50,35,20,8,0,-10];
+ $("main").innerHTML=`<div class="eyebrow">Graphs • Cold water</div><h2>The table and graphs tell the same story differently.</h2><div class="plotGrid"><div class="panel"><table class="table"><tr><th>Glasses</th><th>TU</th><th>MU</th></tr>${units.map((u,i)=>`<tr><td>${u}</td><td>${tu[i]}</td><td>${i===0?"—":mu[i]}</td></tr>`).join("")}</table></div><div><div class="chartwrap"><canvas id="tuGraph" width="800" height="300"></canvas></div><div class="chartwrap" style="margin-top:12px"><canvas id="muGraph" width="800" height="300"></canvas></div></div></div><div class="feedback show hint"><b>Look for the relationship:</b> TU peaks where MU reaches zero. After MU becomes negative, TU falls.</div>`;
+ drawLineGraph($("tuGraph"),units,tu,6,120,[0,20,40,60,80,100,120],"TU","TOTAL UTILITY");
+ drawLineGraph($("muGraph"),units,mu.map(x=>x+20),6,80,[0,20,40,60,80],"MU shifted +20 for display","MARGINAL UTILITY (display offset)");
+}
+function drawLineGraph(c,xs,ys,maxX,maxY,yTicks,label,ylab){
+ const ctx=c.getContext("2d"),g=graphGrid(ctx,c.width,c.height,maxX,maxY,yTicks,"UNITS",ylab);ctx.strokeStyle="#5b5bd6";ctx.lineWidth=4;ctx.beginPath();xs.forEach((x,i)=>{const px=g.m+(x/maxX)*g.pw,py=(c.height-g.m)-(ys[i]/maxY)*g.ph;i?ctx.lineTo(px,py):ctx.moveTo(px,py)});ctx.stroke();ctx.fillStyle="#5b5bd6";ctx.font="bold 14px system-ui";ctx.fillText(label,c.width-130,28)
+}
+function renderBuildLaw(){
+ const target=["more units consumed","marginal utility from successive units","tends to diminish","other things remaining constant"];
+ $("main").innerHTML=`<div class="eyebrow">Game • Build the law</div><h2>Assemble the logic.</h2><div class="tileWrap">${shuffle(target.concat(["total utility becomes zero","price must rise"])).map(x=>`<button class="tile" data-v="${x}">${x}</button>`).join("")}</div><div id="slot" class="slot">Tap the pieces in order…</div><button id="check" class="btn primary" style="margin-top:10px">Check law</button><div id="fb" class="feedback"></div>`;
+ const chosen=[];document.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{if(b.classList.contains("used"))return;chosen.push(b.dataset.v);b.classList.add("used");$("slot").innerHTML=chosen.map(x=>`<span class="tag">${x}</span>`).join(" → ")});
+ $("check").onclick=()=>{const ok=chosen.length===target.length&&target.every((x,i)=>chosen[i]===x);fb(ok,ok?"Law built":"The law is about MU, not TU",ok?"As more units are consumed, MU from successive units tends to diminish, other things remaining constant.":"Start with more units consumed. Then identify what falls: marginal utility.");ok?reward("buildLaw",80):miss()}
+}
+function renderBalanceGame(){
+ const mux=[64,52,46,40,28,14],price=20,mum=2;let i=0,bought=0;
+ $("main").innerHTML=`<div class="eyebrow">Game • Arcade tokens</div><h2>Compare what the next token gives with what its money costs you.</h2>
+ <div class="feedback show hint"><b>Setup:</b> each identical arcade token costs ₹20. Assume each ₹1 is worth 2 utils to you, so MUₘ = 2.</div>
+ <div id="g"></div><div id="fb" class="feedback"></div>`;
+ function show(){
+   if(i>=mux.length){$("g").innerHTML=`<div class="panel goodbg"><h2>You found the stopping point.</h2><p>The equilibrium margin is where utility gained equals utility sacrificed.</p></div>`;reward("balanceGame",120);return}
+   const gain=mux[i], sacrifice=price*mum;
+   $("g").innerHTML=`<div class="grid2">
+     <div class="panel goodbg"><div class="mini">NEXT TOKEN GIVES</div><div class="value">${gain} utils</div><b>MUₓ</b></div>
+     <div class="panel warnbg"><div class="mini">SPENDING ₹${price} GIVES UP</div><div class="value">${sacrifice} utils</div><div class="mini">₹${price} × ${mum} utils/₹</div><b>Pₓ × MUₘ</b></div>
+   </div>
+   <div class="feedback show hint" style="margin-top:12px">${gain>sacrifice?`<b>${gain} > ${sacrifice}</b> — extra benefit is larger than utility sacrificed.`:gain===sacrifice?`<b>${gain} = ${sacrifice}</b> — the two sides balance.`:`<b>${gain} < ${sacrifice}</b> — the next token costs more utility than it gives.`}</div>
+   <div class="answers"><button class="ans" data-x="buy">Buy another token</button><button class="ans" data-x="stop">Stop buying</button></div>`;
+   document.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{
+     const shouldBuy=gain>=sacrifice, choseBuy=b.dataset.x==="buy", ok=choseBuy===shouldBuy;
+     if(ok){
+       if(choseBuy)bought=i+1;
+       fb(true,gain===sacrifice?"Balanced — equilibrium margin":choseBuy?"Worth buying":"Correct stopping decision",
+         gain>sacrifice?`You gain ${gain} utils and sacrifice ${sacrifice}. Net gain is positive, so buying another token raises utility.`:
+         gain===sacrifice?`You gain ${gain} utils and sacrifice exactly ${sacrifice}. This is the equilibrium margin.`:
+         `You would sacrifice ${sacrifice} utils for only ${gain} utils of benefit.`);
+       i++;setTimeout(()=>{$("fb").className="feedback";show()},750)
+     }else{
+       fb(false,"Compare the two sides",gain>sacrifice?`Benefit ${gain} is still larger than sacrifice ${sacrifice}.`:`Sacrifice ${sacrifice} is larger than benefit ${gain}.`);
+       miss()
+     }
+   })
+ }
+ show()
+}
+function renderEquilibriumTable(){
+ const mu=[64,52,46,40,28,14],price=20,mum=2,sac=price*mum;
+ $("main").innerHTML=`<div class="eyebrow">Equilibrium schedule • Arcade tokens</div><h2>Find where the two sides balance.</h2>
+ <div class="plotGrid"><div class="panel"><table class="table"><tr><th>Tokens</th><th>MUₓ</th><th>Pₓ</th><th>MUₘ</th><th>Pₓ×MUₘ</th></tr>${mu.map((x,i)=>`<tr><td>${i+1}</td><td>${x}</td><td>₹${price}</td><td>${mum}</td><td>${sac}</td></tr>`).join("")}</table></div>
+ <div class="panel soft"><p><b>At which token does MUₓ = Pₓ × MUₘ?</b></p><div class="answers">${shuffle([1,2,3,4,5,6].map(x=>({x,ok:x===4}))).map(o=>`<button class="ans" data-ok="${o.ok}">${o.x} tokens</button>`).join("")}</div><div id="fb" class="feedback"></div></div></div>`;
+ document.querySelectorAll("[data-ok]").forEach(b=>b.onclick=()=>{const ok=b.dataset.ok==="true";fb(ok,ok?"Equilibrium found":"Compare MUₓ with the sacrifice column",ok?"At token 4, MUₓ = 40 and Pₓ × MUₘ = 20 × 2 = 40.":"The equilibrium row is where the two values are equal.");ok?reward("eqTable",90):miss()})
+}
+function renderEquilibriumGraph(){
+ $("main").innerHTML=`<div class="eyebrow">Equilibrium diagram • Arcade tokens</div><h2>Where MUₓ meets the utility-sacrifice line.</h2>
+ <div class="plotGrid"><div class="panel"><table class="table"><tr><th>Tokens</th><th>MUₓ</th><th>Pₓ×MUₘ</th></tr><tr><td>1</td><td>64</td><td>40</td></tr><tr><td>2</td><td>52</td><td>40</td></tr><tr><td>3</td><td>46</td><td>40</td></tr><tr><td>4</td><td>40</td><td>40</td></tr><tr><td>5</td><td>28</td><td>40</td></tr><tr><td>6</td><td>14</td><td>40</td></tr></table></div>
+ <div><div class="chartwrap"><canvas id="eqGraph" width="800" height="330"></canvas></div><div class="labels"><span class="tag">MUₓ curve slopes downward</span><span class="tag">Pₓ × MUₘ = 40</span><span class="tag">Intersection = equilibrium</span></div></div></div>
+ <div class="feedback show hint">This is not “MU = price” unless MUₘ happens to equal 1. The full comparison is <b>MUₓ versus Pₓ × MUₘ</b>.</div>`;
+ const c=$("eqGraph"),ctx=c.getContext("2d"),g=graphGrid(ctx,c.width,c.height,6,80,[0,20,40,60,80],"TOKENS","UTILITY");const mus=[64,52,46,40,28,14];
+ ctx.strokeStyle="#5b5bd6";ctx.lineWidth=4;ctx.beginPath();mus.forEach((v,i)=>{const x=g.m+((i+1)/6)*g.pw,y=(c.height-g.m)-(v/80)*g.ph;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
+ const py=(c.height-g.m)-(40/80)*g.ph;ctx.strokeStyle="#ef8b3d";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(g.m,py);ctx.lineTo(c.width-28,py);ctx.stroke();
+ const ex=g.m+(4/6)*g.pw;ctx.fillStyle="#111827";ctx.beginPath();ctx.arc(ex,py,7,0,Math.PI*2);ctx.fill();ctx.font="bold 13px system-ui";ctx.fillText("E",ex+10,py-8)
+}
+function renderVariableGame(){
+ const rounds=[
+   {title:"Price drops",mux:40,p:10,mum:2,q:"MUₓ = 40, Pₓ = ₹10, MUₘ = 2. Buy another unit?",a:["Yes","No","Already satiated"],c:0,why:"Utility sacrifice is only 10 × 2 = 20 utils. MUₓ = 40 > 20, so another unit is worth buying."},
+   {title:"Price rises",mux:40,p:30,mum:2,q:"MUₓ = 40, Pₓ = ₹30, MUₘ = 2. Buy another unit?",a:["No","Yes","Price does not matter"],c:0,why:"Utility sacrifice is 30 × 2 = 60 utils. The unit gives only 40 utils."},
+   {title:"Money becomes more valuable",mux:40,p:20,mum:3,q:"Your phone screen cracked, so every rupee now matters more. MUₓ = 40, Pₓ = ₹20, MUₘ = 3. Buy another arcade token?",a:["No","Yes","MUₘ is irrelevant"],c:0,why:"Spending ₹20 now sacrifices 20 × 3 = 60 utils. The same token is no longer worth buying."},
+   {title:"Back at equilibrium",mux:40,p:20,mum:2,q:"MUₓ = 40, Pₓ = ₹20, MUₘ = 2.",a:["Equilibrium","Satiation","Buy forever"],c:0,why:"40 = 20 × 2. Benefit and utility sacrifice balance."}
+ ];
+ let i=0,score=0;
+ $("main").innerHTML=`<div class="eyebrow">Game • Move one variable</div><h2>See what each part of the equation actually does.</h2><div id="g"></div><div id="fb" class="feedback"></div>`;
+ function show(){
+   const r=rounds[i],choices=shuffle(r.a.map((text,j)=>({text,ok:j===r.c})));
+   $("g").innerHTML=`<div class="panel soft"><div class="eyebrow">${r.title}</div><p class="big">${r.q}</p><div class="grid3"><div class="panel"><b>MUₓ</b><div class="value">${r.mux}</div></div><div class="panel"><b>Pₓ</b><div class="value">₹${r.p}</div></div><div class="panel"><b>MUₘ</b><div class="value">${r.mum}</div></div></div></div><div class="answers">${choices.map((x,j)=>`<button class="ans" data-i="${j}">${x.text}</button>`).join("")}</div>`;
+   document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const ok=choices[+b.dataset.i].ok;if(ok)score++;fb(ok,ok?"Correct":"Recalculate the sacrifice",r.why);ok?tone("good"):miss();i++;if(i<rounds.length)setTimeout(()=>{$("fb").className="feedback";show()},700);else setTimeout(()=>{$("g").innerHTML=`<div class="panel ${score>=3?"goodbg":"warnbg"}"><div class="score">${score}/4</div><p>Now the symbols should behave like quantities, not vocabulary.</p></div>`;reward("variableGame",score*25)},450)})
+ }
+ show()
+}
+function renderBoard(){
+ const steps=[
+  {label:"1 • State the law",q:"Which opening sentence is correct?",opts:[
+    ["As successive units of a commodity are consumed, the marginal utility from each additional unit tends to diminish, other things remaining constant.",true],
+    ["Total utility must fall from the second unit onward.",false],["Marginal utility always becomes negative immediately.",false]
+  ]},
+  {label:"2 • Conditions",q:"What should you say about the situation in which the law is being applied?",opts:[
+    ["Units should be comparable, consumption reasonably continuous, and tastes and other relevant conditions unchanged.",true],
+    ["The units should be completely different sizes.",false],["Price must rise after every unit.",false]
+  ]},
+  {label:"3 • Schedule",q:"What should the table demonstrate?",opts:[
+    ["MU falls with successive units; TU rises while MU is positive, is maximum when MU is zero, and falls when MU is negative.",true],
+    ["TU and MU must always be equal.",false],["TU must be zero at equilibrium.",false]
+  ]},
+  {label:"4 • Diagram",q:"What should the diagram communicate?",opts:[
+    ["The MU curve slopes downward as successive units are consumed.",true],
+    ["The MU curve must slope upward.",false],["The diagram should show supply instead.",false]
+  ]},
+  {label:"5 • Explain",q:"How do you finish?",opts:[
+    ["Each extra unit adds less satisfaction than the previous one, which is why marginal utility diminishes.",true],
+    ["The law says people stop consuming after one unit.",false],["The law is caused by market supply.",false]
+  ]}
+ ];
+ let i=0,answer=[];
+ $("main").innerHTML=`<div class="eyebrow">Board answer coach</div><h2>Write the DMU answer in exam order.</h2><div id="coach"></div><div id="fb" class="feedback"></div>`;
+ function show(){
+   if(i>=steps.length){$("coach").innerHTML=`<div class="answerPreview"><h3>Your board answer</h3>${answer.map(x=>`<div class="answerLine">${x}</div>`).join("")}</div>`;fb(true,"Board structure complete","You now have statement → conditions → schedule interpretation → diagram → explanation.");reward("board",120);return}
+   const s=steps[i],opts=shuffle([...s.opts]);
+   $("coach").innerHTML=`<div class="panel soft"><div class="stepLabel">${s.label}</div><p class="big">${s.q}</p></div><div class="answers">${opts.map((o,j)=>`<button class="ans" data-j="${j}">${o[0]}</button>`).join("")}</div><div class="answerPreview"><h3>Answer so far</h3>${answer.length?answer.map(x=>`<div class="answerLine">${x}</div>`).join(""):`<p class="tiny">Build it one sentence at a time.</p>`}</div>`;
+   document.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{const o=opts[+b.dataset.j];if(o[1]){answer.push(o[0]);i++;tone("good");setTimeout(show,380)}else{fb(false,"That would weaken the answer","Use the law's statement, conditions, schedule relationship and explanation — not unrelated theory.");miss()}})
+ }
+ show()
+}
+function renderBoss(){
+ quiz("Demand 4 Final Boss",[
+  {q:"After another glass of water, TU rises from 40 to 65. MU of that glass is...",a:["25","65","105","−25"],c:0,why:"MU = change in TU = 65 − 40 = 25."},
+  {q:"MU is falling but still positive.",a:["TU rises at a diminishing rate","TU must fall","TU is zero","TU is always maximum"],c:0,why:"Positive MU keeps adding to TU."},
+  {q:"MU reaches zero.",a:["TU is maximum","TU is zero","TU falls immediately to zero","Price must be zero"],c:0,why:"Zero MU means the extra unit adds no satisfaction."},
+  {q:"Which statement describes DMU?",a:["Successive units tend to give less extra utility","Total utility must fall from the second unit onward","Price must always fall","Utility is identical for everyone"],c:0,why:"DMU concerns marginal, not total, utility."},
+  {q:"A test uses wildly different-sized units.",a:["An assumption of DMU is violated","That proves DMU","That creates market demand","That is consumer equilibrium"],c:0,why:"Units should be comparable."},
+  {q:"One-good equilibrium condition is best expressed as...",a:["MUx = Px × MUm","TU = 0","MU = 0 always","Price = income"],c:0,why:"The extra utility gained must equal the utility sacrificed by spending the price."},
+  {q:"An arcade token costs ₹20. MUₘ = 2 utils per rupee. The 4th token gives MUₓ = 40.",a:["The 4th token is the equilibrium margin","The consumer is satiated","The token should never be bought","Price is irrelevant"],c:0,why:"Pₓ × MUₘ = 20 × 2 = 40, exactly equal to MUₓ."},
+  {q:"MUₓ = 30, Pₓ = ₹20 and MUₘ = 2.",a:["Do not buy another unit","Buy another unit","You are at equilibrium","MUₘ should be ignored"],c:0,why:"Utility sacrifice is 40 utils, larger than the 30 utils gained."},
+  {q:"Price falls while the MU schedule is unchanged.",a:["Equilibrium quantity generally rises","Equilibrium quantity must fall","Utility disappears","Nothing can change"],c:0,why:"More units now have MU high enough to justify the lower price."},
+  {q:"Old concept check: Coke gets cheaper while Pepsi price stays unchanged. Buyers switch toward Coke.",a:["Substitution effect","Giffen effect","Composite demand","Ex-post demand"],c:0,why:"A relative-price change makes Coke more attractive than its substitute."},
+  {q:"Which sentence is safest?",a:["Utility is subjective and can differ across consumers","Utility equals usefulness to society","Utility is always measurable in real life","Harmful goods can never have utility"],c:0,why:"Utility is about individual want-satisfaction."}
+ ],"boss")
+}
+$("next").onclick=()=>{if(state.i<screens.length-1){state.i++;render();window.scrollTo({top:0,behavior:"smooth"})}else location.href="mission.html?mission=demand-5"};
+$("back").onclick=()=>{if(state.i>0){state.i--;render()}else location.href="mission.html?mission=demand-3"};
+$("hint").onclick=()=>{const d=document.createElement("div");d.className="feedback show hint";d.innerHTML="<b>Ask which quantity you're looking at:</b> total satisfaction (TU), extra satisfaction from one more unit (MU), or the point where the extra benefit just matches the cost (equilibrium).";$("main").appendChild(d);tone("click")};
+$("sound").onclick=()=>{state.sound=!state.sound;save();header()};
+setupMissionNavigation();render();
+})();

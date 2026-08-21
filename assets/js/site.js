@@ -1,0 +1,1 @@
+document.addEventListener("click",e=>{const b=e.target.closest(".ans,.choiceCard,.pick");if(!b)return;const group=b.closest(".answers,.grid2,.grid3")||b.parentElement;if(group)group.querySelectorAll(".ans.selected,.choiceCard.selected,.pick.selected").forEach(x=>x.classList.remove("selected"));b.classList.add("selected")},true);
