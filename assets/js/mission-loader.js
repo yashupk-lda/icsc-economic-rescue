@@ -1,5 +1,5 @@
 (function(){
-  const BUILD="18";
+  const BUILD="19";
   const params=new URLSearchParams(location.search);
   const id=params.get("mission")||"demand-1";
   const meta=(window.MISSION_META||{})[id];
@@ -16,7 +16,7 @@
   if(!meta){fail(`Unknown mission: ${id}`);return}
   document.documentElement.style.setProperty("--mission-a",meta.color[0]);
   document.documentElement.style.setProperty("--mission-b",meta.color[1]);
-  document.getElementById("missionBrand").innerHTML=`ECONOMICS RESCUE <span class="dim">/ DEMAND ${meta.n}/6</span>`;
+  document.getElementById("missionBrand").innerHTML=`ECONOMICS RESCUE <span class="dim">/ ${meta.unit||"DEMAND"} ${meta.n}/${meta.total||6}</span>`; const mapLink=document.getElementById("unitMapLink"); if(mapLink){mapLink.href=meta.map||"demand.html";mapLink.textContent=(meta.unit||"Demand").replace(/\b\w/g,c=>c.toUpperCase())+" map";}
   document.title=`${meta.title} — Economics Rescue`;
   const restart=document.getElementById("restartMission"); if(restart) restart.onclick=()=>{ if(confirm("Restart this mission from page 1? Your XP for this mission will reset.")){ localStorage.removeItem(meta.storageKey); location.reload(); } };
   const s=document.createElement("script");
