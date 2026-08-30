@@ -1,0 +1,69 @@
+const $=id=>document.getElementById(id);
+const META=window.MISSION_META[new URLSearchParams(location.search).get('mission')||'cost-6'];
+const KEY=META.storageKey;
+const DEFAULT={i:0,xp:0,streak:0,sound:true,rewarded:{}};
+let state=Object.assign({},DEFAULT,JSON.parse(localStorage.getItem(KEY)||'{}'));
+const screens=['hook','tr','theaterVisual','ar','mr','calc','iscRevenueNumerical','singlePrice','significance','scenario','board','boss','finish'];
+const labels={'hook':'What did the sale earn?','tr':'Total revenue','ar':'Average revenue','mr':'Marginal revenue','calc':'Revenue table drill','singlePrice':'When price is the same','significance':'Why these matter','scenario':'Scenario practice','board':'Board answer','boss':'Revenue boss','finish':'Mission complete','theaterVisual':'See it: a ticket counter','iscRevenueNumerical':'ISC numerical: mixed revenue'};
+const help={'hook':'Revenue is the money a firm receives from selling its output.','tr':'Total revenue equals price multiplied by quantity sold.','ar':'Average revenue is revenue per unit sold, so divide TR by quantity.','mr':'MR is the addition to total revenue from selling one more unit.','calc':'Use TR = P×Q, AR = TR/Q, and MR as the change in TR.','singlePrice':'If every unit is sold at the same price, AR and MR both equal the price.','significance':'Revenue concepts help the firm track total earnings, per-unit earnings and extra earnings from expansion.','scenario':'Translate the story into revenue language first: total, per unit, or one more?','board':'A good answer defines the term and can show it with a tiny numerical example.','boss':'Choose the concept by the question being asked.','finish':'Next comes revenue under different market structures.','theaterVisual':'Revenue concepts become concrete when you follow money from individual ticket sales into total revenue.','iscRevenueNumerical':'His school papers often make one short numerical test several ideas at once.'};
+state.i=Math.max(0,Math.min(+state.i||0,screens.length-1));
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function tone(k='click'){if(!state.sound)return;try{const C=new(window.AudioContext||window.webkitAudioContext)(),o=C.createOscillator(),g=C.createGain(),m={good:[620,880,.1],bad:[220,170,.12],win:[523,1046,.22]}[k]||[430,520,.05];o.connect(g);g.connect(C.destination);o.frequency.setValueAtTime(m[0],C.currentTime);o.frequency.exponentialRampToValueAtTime(m[1],C.currentTime+m[2]);g.gain.setValueAtTime(.03,C.currentTime);g.gain.exponentialRampToValueAtTime(.0001,C.currentTime+m[2]);o.start();o.stop(C.currentTime+m[2])}catch(e){}}
+function reward(n=20){if(!state.rewarded[state.i]){state.rewarded[state.i]=1;state.xp+=n}state.streak++;tone('good');save();header()}
+function miss(){state.streak=0;tone('bad');save();header()}
+function header(){$('xp').textContent=state.xp;$('streak').textContent=state.streak;$('snd').textContent=state.sound?'ON':'OFF';$('fill').style.width=((state.i+1)/screens.length*100)+'%';$('pageJump').innerHTML=screens.map((s,i)=>`<option value="${i}" ${i===state.i?'selected':''}>${i+1}. ${labels[s]}</option>`).join('')}
+function fb(txt,ok=true){const e=$('fb');if(!e)return;e.className='feedback show '+(ok?'good':'bad');e.innerHTML=txt}
+function quiz(correct,why,wrong='Look carefully at the economic relationship being tested.'){document.querySelectorAll('.q').forEach(b=>b.onclick=()=>{document.querySelectorAll('.q').forEach(x=>x.classList.remove('selected','correct','wrong'));b.classList.add('selected');if(b.dataset.v===correct){b.classList.add('correct');fb('✓ '+why,true);reward()}else{b.classList.add('wrong');fb(wrong,false);miss()}})}
+$('next').onclick=()=>{if(state.i<screens.length-1){state.i++;save();render();scrollTo({top:0,behavior:'smooth'})}else location.href='cost.html'};
+$('back').onclick=()=>{if(state.i>0){state.i--;save();render();scrollTo({top:0,behavior:'smooth'})}else location.href='cost.html'};
+$('hint').onclick=()=>{document.querySelector('.helpBox')?.remove();$('main').insertAdjacentHTML('beforeend',`<div class="helpBox"><h3>I don't get it</h3><p>${help[screens[state.i]]}</p></div>`)};
+$('sound').onclick=()=>{state.sound=!state.sound;save();header()};
+$('pageJump').onchange=e=>{state.i=+e.target.value;save();render()};
+function render(){header();const t=screens[state.i],m=$('main');
+if(t==='hook')m.innerHTML=`
+<div class='eyebrow'>Cost & Revenue • Mission 6</div><h1>What did the sale earn?</h1>
+<div class='scene'><div class='sceneTitle'>Now switch from spending to earning.</div><p>Cost asks: what did production cost? Revenue asks: how much money came in from selling the output?</p></div>
+<div class='conceptStrip'><div><b>TR</b><span>Total revenue</span></div><div><b>AR</b><span>Average revenue</span></div><div><b>MR</b><span>Marginal revenue</span></div></div>`;if(t==='tr')m.innerHTML=`
+<div class='eyebrow'>First revenue concept</div><h2>Total Revenue (TR)</h2>
+<div class='grid2'><div class='panel'><h3>Movie ticket example</h3><p>Ticket price = ₹250</p><p>Tickets sold = 100</p><div class='equation' style='font-size:34px'>TR = ₹25,000</div></div><div class='definition'><div class='term'>TR</div><p>Total revenue is the total money receipt from the sale of output.</p><div class='formal'><b>Formula:</b> TR = Price × Quantity</div></div></div>
+<div class='questionCard'><b>If a bakery sells 40 cakes at ₹300 each, its TR is:</b><div class='answers'><button class='ans q' data-v='12000'>₹12,000</button><button class='ans q' data-v='300'>₹300</button><button class='ans q' data-v='40'>₹40</button></div><div id='fb' class='feedback'></div></div>`;
+if(t==='theaterVisual')m.innerHTML=`
+<div class='eyebrow'>See the sale happen</div><h2>Every ticket creates a little piece of revenue.</h2>
+<div class='photoHero lessonPhoto'><img src='https://commons.wikimedia.org/wiki/Special:Redirect/file/Movie_theater_seats_(Unsplash).jpg' alt='Rows of seats in a movie theater'><div class='photoOverlay'><b>One seat sold = one sale.</b><span>Add all ticket receipts for TR. Divide by tickets sold for AR. Compare TR before and after one extra ticket for MR.</span></div></div>
+<p class='sourceNote'>Photo: Elijah Flores / Wikimedia Commons; freely reusable legacy Unsplash image.</p>
+<div class='conceptStrip'><div><b>All receipts</b><span>TR</span></div><div><b>Per ticket</b><span>AR</span></div><div><b>Next ticket</b><span>MR</span></div></div>`;if(t==='ar')m.innerHTML=`
+<div class='eyebrow'>Second revenue concept</div><h2>Average Revenue (AR)</h2>
+<div class='equation'>AR = TR / Q</div>
+<div class='panel'><p>If total revenue from selling 100 tickets is ₹25,000, then average revenue per ticket is ₹250.</p><p>When every unit is sold at the same price, <b>AR = price</b>.</p></div>
+<div class='questionCard'><b>If TR = ₹9,000 and 30 units are sold, AR is:</b><div class='answers'><button class='ans q' data-v='300'>₹300</button><button class='ans q' data-v='9000'>₹9,000</button><button class='ans q' data-v='30'>₹30</button></div><div id='fb' class='feedback'></div></div>`;if(t==='mr')m.innerHTML=`
+<div class='eyebrow'>Third revenue concept</div><h2>Marginal Revenue (MR)</h2>
+<div class='grid2'><div class='panel'><h3>The next sale</h3><p>100 tickets → TR = ₹25,000</p><p>101 tickets → TR = ₹25,250</p><div class='equation' style='font-size:34px'>MR = ₹250</div></div><div class='definition'><div class='term'>MR</div><p>Marginal revenue is the addition to total revenue from the sale of one more unit.</p><div class='formal'><b>Formula:</b> MR = ΔTR / ΔQ</div></div></div>
+<div class='callout'>Just like marginal cost, marginal revenue focuses on <b>one more</b> unit.</div>`;if(t==='calc')m.innerHTML=`
+<div class='eyebrow'>Table drill</div><h2>Calculate MR</h2>
+<div class='tableWrap panel'><table class='table'><tr><th>Quantity sold</th><th>Total Revenue</th></tr><tr><td>14</td><td>₹2,800</td></tr><tr><td>15</td><td>₹3,000</td></tr></table></div>
+<div class='questionCard'><b>Marginal revenue of the 15th unit is:</b><div class='answers'><button class='ans q' data-v='200'>₹200</button><button class='ans q' data-v='3000'>₹3,000</button><button class='ans q' data-v='2800'>₹2,800</button></div><div id='fb' class='feedback'></div></div>`;
+if(t==='iscRevenueNumerical')m.innerHTML=`
+<div class='eyebrow'>ISC Mode • numerical</div><h2>TR, AR and MR together</h2>
+<div class='paperCard'><p>A cinema sells 80 tickets and earns total revenue of ₹20,000. When the 81st ticket is sold, total revenue becomes ₹20,220.</p><p>Find AR at 80 tickets and MR of the 81st ticket.</p></div>
+<div class='answers'><button class='ans q' data-v='correct'>AR = ₹250; MR = ₹220</button><button class='ans q' data-v='wrong1'>AR = ₹20,000; MR = ₹20,220</button><button class='ans q' data-v='wrong2'>AR = ₹250; MR = ₹250</button></div><div id='fb' class='feedback'></div>`;if(t==='singlePrice')m.innerHTML=`
+<div class='eyebrow'>Lock in a useful rule</div><h2>If each unit sells at the same price</h2>
+<div class='tableWrap panel'><table class='table'><tr><th>Q</th><th>Price</th><th>TR</th><th>AR</th><th>MR</th></tr><tr><td>1</td><td>₹50</td><td>₹50</td><td>₹50</td><td>₹50</td></tr><tr><td>2</td><td>₹50</td><td>₹100</td><td>₹50</td><td>₹50</td></tr><tr><td>3</td><td>₹50</td><td>₹150</td><td>₹50</td><td>₹50</td></tr></table></div>
+<div class='equation'>If price is constant, then AR = MR = Price</div>
+<div class='questionCard'><b>In the table above, why is MR constant at ₹50?</b><div class='answers'><button class='ans q' data-v='sameprice'>Because each extra unit adds the same ₹50 to TR.</button><button class='ans q' data-v='moreq'>Because quantity is rising.</button><button class='ans q' data-v='lesstr'>Because TR is falling.</button></div><div id='fb' class='feedback'></div></div>`;if(t==='significance')m.innerHTML=`
+<div class='eyebrow'>Why learn three revenue concepts?</div><h2>TR, AR and MR answer different questions</h2>
+<div class='grid3'><div class='panel'><h3>TR</h3><p>How much money came in altogether?</p></div><div class='panel'><h3>AR</h3><p>How much revenue came from each unit on average?</p></div><div class='panel'><h3>MR</h3><p>How much did the next unit add?</p></div></div>`;if(t==='scenario')m.innerHTML=`
+<div class='eyebrow'>Application</div><h2>Which concept is being asked?</h2>
+<div class='questionCard'><b>A gaming café wants to know how much extra money came in when one extra hour of play was sold. Which concept is being asked about?</b><div class='answers'><button class='ans q' data-v='mr'>Marginal revenue</button><button class='ans q' data-v='tr'>Total revenue</button><button class='ans q' data-v='ar'>Average revenue</button></div><div id='fb' class='feedback'></div></div>`;if(t==='board')m.innerHTML=`
+<div class='eyebrow'>Board Answer Coach</div><h2>“What is average revenue?”</h2>
+<div class='board'><p>Average revenue is the revenue earned per unit of output sold. It is obtained by dividing total revenue by the number of units sold. Thus, AR = TR / Q. When a firm sells all units at the same price, average revenue is equal to price.</p></div>
+<div class='questionCard'><b>What is the most exam-useful final sentence here?</b><div class='answers'><button class='ans q' data-v='price'>When all units sell at the same price, AR = price.</button><button class='ans q' data-v='long'>Average revenue is very important in economics.</button><button class='ans q' data-v='sell'>Firms like selling more units.</button></div><div id='fb' class='feedback'></div></div>`;if(t==='boss')m.innerHTML=`
+<div class='eyebrow'>Final Boss</div><h2>The ticket counter</h2>
+<div class='caseFile'><b>CASE</b><p>A theatre sells 200 tickets at ₹180 each. When ticket sales rise to 201, total revenue rises from ₹36,000 to ₹36,180.</p></div>
+<div class='questionCard'><b>Which statement is correct?</b><div class='answers'><button class='ans q' data-v='full'>TR at 200 tickets is ₹36,000, AR is ₹180, and MR of the 201st ticket is ₹180.</button><button class='ans q' data-v='wrong1'>AR is ₹36,000 because that is total money received.</button><button class='ans q' data-v='wrong2'>MR is 201 because one more ticket was sold.</button></div><div id='fb' class='feedback'></div></div>`;if(t==='finish')m.innerHTML=`
+<div class='eyebrow'>Mission complete</div><h1>You can now separate total, average and marginal revenue.</h1>
+<div class='coverageStrip'><p>✓ TR &nbsp; ✓ AR &nbsp; ✓ MR &nbsp; ✓ calculations &nbsp; ✓ meaning under a constant price</p></div>
+<p class='big'>Next: how revenue curves look under perfect and imperfect competition.</p><a class='btn primary' href='cost.html'>Back to Cost & Revenue map →</a>`;
+if(t==='tr')quiz('12000','Correct. TR = 300 × 40 = ₹12,000.','Look carefully at the economic relationship being tested.');if(t==='ar')quiz('300','Exactly. Average revenue is total revenue per unit sold.','Look carefully at the economic relationship being tested.');if(t==='calc')quiz('200','Correct. MR = 3000 − 2800 = ₹200.','Look carefully at the economic relationship being tested.');if(t==='singlePrice')quiz('sameprice','Exactly. Every extra unit sold at ₹50 adds ₹50 to total revenue.','Look carefully at the economic relationship being tested.');if(t==='scenario')quiz('mr','Correct. “Extra money from one more unit” is the definition of marginal revenue.','Look carefully at the economic relationship being tested.');if(t==='board')quiz('price','Exactly. It gives a commonly tested relationship.','Look carefully at the economic relationship being tested.');if(t==='boss')quiz('full','Boss cleared. TR is total money, AR is per-ticket revenue, and MR is the extra revenue from ticket 201.','Look carefully at the economic relationship being tested.');
+
+if(t==='iscRevenueNumerical')quiz('correct','Correct. AR = 20,000 ÷ 80 = ₹250. MR = 20,220 − 20,000 = ₹220.','Look at the economic clue, then apply the definition.');save();header()}
+render();
