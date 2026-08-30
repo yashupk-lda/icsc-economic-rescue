@@ -1,5 +1,5 @@
 (function(){
-  const BUILD="25";
+  const BUILD="27";
   const params=new URLSearchParams(location.search);
   const id=params.get("mission")||"demand-1";
   const COST_FALLBACK={
@@ -11,12 +11,19 @@
     "cost-6":{n:6,total:7,unit:"COST & REVENUE",map:"cost.html",title:"What Did the Sale Earn?",color:["#eab308","#a16207"],storageKey:"econ_cost_m6_v25"},
     "cost-7":{n:7,total:7,unit:"COST & REVENUE",map:"cost.html",title:"Revenue Curves & Final Boss",color:["#ec4899","#be185d"],storageKey:"econ_cost_m7_v25"}
   };
+  const PRODUCER_FALLBACK={
+    "producer-1":{n:1,total:4,unit:"PRODUCER’S EQUILIBRIUM",map:"producer.html",title:"Should I Make One More?",color:["#14b8a6","#0f766e"],storageKey:"econ_producer_m1_v27"},
+    "producer-2":{n:2,total:4,unit:"PRODUCER’S EQUILIBRIUM",map:"producer.html",title:"Find the Biggest Gap",color:["#f59e0b","#b45309"],storageKey:"econ_producer_m2_v27"},
+    "producer-3":{n:3,total:4,unit:"PRODUCER’S EQUILIBRIUM",map:"producer.html",title:"Find Equilibrium on the Graph",color:["#6366f1","#4338ca"],storageKey:"econ_producer_m3_v27"},
+    "producer-4":{n:4,total:4,unit:"PRODUCER’S EQUILIBRIUM",map:"producer.html",title:"ISC Equilibrium Lab",color:["#ec4899","#be185d"],storageKey:"econ_producer_m4_v27"}
+  };
   window.MISSION_META=window.MISSION_META||{};
   if(COST_FALLBACK[id] && !window.MISSION_META[id]) window.MISSION_META[id]=COST_FALLBACK[id];
-  const meta=window.MISSION_META[id]||COST_FALLBACK[id];
+  if(PRODUCER_FALLBACK[id] && !window.MISSION_META[id]) window.MISSION_META[id]=PRODUCER_FALLBACK[id];
+  const meta=window.MISSION_META[id]||COST_FALLBACK[id]||PRODUCER_FALLBACK[id];
   const main=document.getElementById("main");
   function fail(message){
-    if(main) main.innerHTML=`<div class="eyebrow">Mission loading problem</div><h2>We hit a snag.</h2><p>${message}</p><div class="actions"><button class="btn primary" id="retryMission">Retry this mission</button><a class="btn secondary" href="cost.html">Cost & Revenue map</a></div>`;
+    if(main) main.innerHTML=`<div class="eyebrow">Mission loading problem</div><h2>We hit a snag.</h2><p>${message}</p><div class="actions"><button class="btn primary" id="retryMission">Retry this mission</button><a class="btn secondary" href="menu.html">Course menu</a></div>`;
     const retry=document.getElementById("retryMission"); if(retry) retry.onclick=()=>location.reload();
   }
   window.addEventListener("error",e=>{

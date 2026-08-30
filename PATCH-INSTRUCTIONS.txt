@@ -1,0 +1,8 @@
+ECONOMICS RESCUE — PRODUCER'S EQUILIBRIUM v27 DEEP PASS
+
+Upload the CONTENTS of this folder to the ROOT of the GitHub repository.
+Overwrite matching files.
+
+This patch is self-contained for Producer's Equilibrium and includes the shared loader/meta/CSS files it depends on.
+
+After Cloudflare deploys, open a fresh tab or hard-refresh once.
