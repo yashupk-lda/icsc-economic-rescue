@@ -1,8 +1,16 @@
-ECONOMICS RESCUE — PRODUCER'S EQUILIBRIUM v27 DEEP PASS
+ECONOMICS RESCUE V28 — AI TUTOR
 
 Upload the CONTENTS of this folder to the ROOT of the GitHub repository.
-Overwrite matching files.
+Do not upload the enclosing patch folder itself.
 
-This patch is self-contained for Producer's Equilibrium and includes the shared loader/meta/CSS files it depends on.
+Then in Cloudflare Pages:
+1. Workers & Pages
+2. Open the Economics Rescue project
+3. Settings
+4. Bindings
+5. Add -> Workers AI
+6. Variable name: AI
+7. Save and redeploy
 
-After Cloudflare deploys, open a fresh tab or hard-refresh once.
+After deploy, /api/tutor should return JSON with ai_bound: true.
+See docs/AI_TUTOR_SETUP.md for details.

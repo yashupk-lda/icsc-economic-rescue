@@ -1,0 +1,1 @@
+V28 adds a Cloudflare Workers AI tutor sidebar, written-answer checker, and mistake-review mode. See docs/AI_TUTOR_SETUP.md.
