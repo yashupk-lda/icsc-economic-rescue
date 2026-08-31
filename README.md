@@ -29,6 +29,3 @@ Cloudflare Pages can publish the repository root directly. No build command is n
 
 
 Update v23: Cost & Revenue now includes all 7 live missions.
-
-
-Update v26: Producer’s Equilibrium added as a four-mission live chapter.
