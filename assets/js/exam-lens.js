@@ -20,7 +20,8 @@
   'cost-4':['MC < AC','MC > AC','minimum point','U-shaped curve'],
   'cost-5':['long run','LAC','LMC','economies of scale','diseconomies of scale'],
   'cost-6':['total revenue','average revenue','marginal revenue','TR = P × Q'],
-  'cost-7':['P = AR = MR','price taker','MR < AR','revenue curves']
+  'cost-7':['P = AR = MR','price taker','MR < AR','revenue curves'],
+  'cost-8':['profit maximisation','TR − TC maximum','MR = MC','MC cuts MR from below']
  };
  const rules=[
   [/oligopoly|few giant|interdepend/i,['few sellers','mutual interdependence','rival reaction','strategic behaviour']],
@@ -35,6 +36,7 @@
   [/marginal cost|MC/i,['addition to total cost','one more unit','ΔTC/ΔQ']],
   [/average cost|AFC|AVC/i,['cost per unit','AFC','AVC','AC']],
   [/long run|LAC|economies|scale/i,['all factors variable','LAC','economies of scale','diseconomies of scale']],
+  [/producer.?s equilibrium|profit maxim|MR.?MC|equilibrium output/i,['profit maximisation','MR = MC','MC cuts MR from below','TR − TC maximum']],
   [/marginal revenue|MR/i,['addition to total revenue','one more unit','ΔTR/ΔQ']],
   [/average revenue|AR/i,['revenue per unit','TR/Q','AR = price']],
   [/law of demand|slopes down/i,['inverse relationship','price','quantity demanded','ceteris paribus']],

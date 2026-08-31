@@ -1,5 +1,5 @@
 (function(){
-  const BUILD="24";
+  const BUILD="25";
   const params=new URLSearchParams(location.search);
   const id=params.get("mission")||"demand-1";
   const meta=(window.MISSION_META||{})[id];

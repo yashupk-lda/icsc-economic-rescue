@@ -8,3 +8,7 @@ Public references consulted for patterns and examiner expectations:
 - Current CISCE Economics syllabus
 
 The existing lesson content and previously documented reusable-image attributions remain unchanged.
+
+
+## V25 correction: Producer's Equilibrium
+Added as Cost & Revenue Mission 8 because the current ISC syllabus explicitly requires Producer's Equilibrium (profit maximisation) using both TR–TC and MR–MC approaches with diagrams. Also added to Revision Hub, Exam Lens and Question Bank.
