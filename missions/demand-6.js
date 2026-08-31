@@ -24,7 +24,7 @@ const PAGE_LABELS={
   equalChoice:"Find equal satisfaction",plotPersonal:"Plot your curve",indifferentMeaning:"What 'indifferent' means",trade:"What would you trade?",mrsReveal:"MRS",
   diminishing:"Why MRS falls",convexity:"Convexity",icMap:"Indifference map",slopeProperty:"Why IC slopes down",intersection:"Why curves cannot cross",
   budgetIntro:"What can you afford?",budgetBuilder:"Build a budget line",budgetEquation:"Budget equation",budgetZones:"Inside/on/outside",incomeShift:"Income change",
-  priceRotate:"Price change",equilibriumGame:"Find equilibrium",tangency:"Why tangency matters",boardCoach:"Board answer coach",boss:"Final Boss",finish:"Mission complete"
+  priceRotate:"Price change",equilibriumGame:"Find equilibrium",tangency:"Why tangency matters",boardCoach:"Board answer coach",boss:"Comprehensive Practice",finish:"Mission complete"
 };
 
 const PAGE_HELP={
@@ -110,7 +110,7 @@ function optionButton(text,value,cls="choiceCard"){return `<button type="button"
 function render(){
   header();const t=currentScreenType(),m=$("main"),A=g1(),B=g2();
   if(t==="intro"){
-    m.innerHTML=`<div class="eyebrow">Mission 6 • Choose Your Bundle</div><h1>What do I want — and what can I afford?</h1><p class="big">This time, you are going to build the choice model yourself.</p><div class="grid2"><div class="definition"><b>D4–D5:</b><p>We used numbers such as MU = 40 and compared benefit per rupee.</p></div><div class="definition"><b>D6:</b><p>No happiness score needed. We only ask which combination you prefer.</p></div></div><div class="callout"><b>Mission rule:</b> understand the idea first. We will reveal the economics jargon only after it makes sense.</div>`;
+    m.innerHTML=`<div class="eyebrow">Mission 6 • Choose Your Bundle</div><h1>Indifference Curves and Consumer Equilibrium</h1><p class="big">This time, you are going to build the choice model yourself.</p><div class="grid2"><div class="definition"><b>D4–D5:</b><p>We used numbers such as MU = 40 and compared benefit per rupee.</p></div><div class="definition"><b>D6:</b><p>No happiness score needed. We only ask which combination you prefer.</p></div></div><div class="callout"><b>Mission rule:</b> understand the idea first. We will reveal the economics jargon only after it makes sense.</div>`;
   }
   else if(t==="pickGoods"){
     m.innerHTML=`<div class="eyebrow">Step 1 • Make it yours</div><h2>Pick any TWO things you genuinely like.</h2><p>We will use your pair through the whole mission.</p><div class="pickGrid">${GOODS.map(g=>`<button class="personalPick ${state.goods.includes(g.id)?"selected":""}" data-good="${g.id}"><span>${g.emoji}</span><b>${g.name}</b></button>`).join("")}</div><div id="pickFb" class="feedback ${state.goods.length===2?"show good":""}">${state.goods.length===2?`Nice. Your mission will use <b>${A.emoji} ${A.name}</b> and <b>${B.emoji} ${B.name}</b>.`:"Pick two."}</div>`;
@@ -231,11 +231,11 @@ function render(){
       {q:"At ordinal consumer equilibrium, what matches?",a:["MRSxy and Px/Py","TU and zero","The quantities of X and Y"],c:0,h:"Personal trade-off equals the market price trade-off."}
     ];
     const bq=qs[Number(state.bossIndex)||0];const done=(Number(state.bossIndex)||0)>=qs.length;
-    if(done){m.innerHTML=`<div class="eyebrow">Final Boss defeated</div><h1>You can now reason through consumer choice.</h1><div class="feedback show good">You separated preference from affordability and connected MRS to the price ratio.</div><button class="btn primary" id="resetBoss">Play boss again</button>`;setTimeout(()=>{$("resetBoss").onclick=()=>{state.bossIndex=0;save();render()}},0)}
-    else{m.innerHTML=`<div class="eyebrow">Final Boss • ${Number(state.bossIndex||0)+1}/${qs.length}</div><h2>${bq.q}</h2><div class="answers">${bq.a.map((x,i)=>`<button class="ans bossAns" data-i="${i}">${x}</button>`).join("")}</div><div id="bossFb" class="feedback"></div>`;selectCards(".bossAns",b=>{if(Number(b.dataset.i)===bq.c){feedback("bossFb","✓ Correct. "+bq.h);reward(25);state.bossIndex=(Number(state.bossIndex)||0)+1;save();setTimeout(render,650)}else{feedback("bossFb","Not quite. "+bq.h,false);miss()}})}
+    if(done){m.innerHTML=`<div class="eyebrow">Comprehensive Practice defeated</div><h1>You can now reason through consumer choice.</h1><div class="feedback show good">You separated preference from affordability and connected MRS to the price ratio.</div><button class="btn primary" id="resetBoss">Play boss again</button>`;setTimeout(()=>{$("resetBoss").onclick=()=>{state.bossIndex=0;save();render()}},0)}
+    else{m.innerHTML=`<div class="eyebrow">Comprehensive Practice • ${Number(state.bossIndex||0)+1}/${qs.length}</div><h2>${bq.q}</h2><div class="answers">${bq.a.map((x,i)=>`<button class="ans bossAns" data-i="${i}">${x}</button>`).join("")}</div><div id="bossFb" class="feedback"></div>`;selectCards(".bossAns",b=>{if(Number(b.dataset.i)===bq.c){feedback("bossFb","✓ Correct. "+bq.h);reward(25);state.bossIndex=(Number(state.bossIndex)||0)+1;save();setTimeout(render,650)}else{feedback("bossFb","Not quite. "+bq.h,false);miss()}})}
   }
   else {
-    m.innerHTML=`<div class="eyebrow">Demand unit complete</div><h1>Consumer Choice Unlocked 🏆</h1><p class="big">You built the entire ordinal utility model from ordinary choices.</p><div class="grid2"><div class="definition"><b>Preferences</b><p>Ordinal ranking → indifference curves → MRS → diminishing MRS.</p></div><div class="definition"><b>Constraint</b><p>Income + prices → budget line → highest attainable IC.</p></div></div><div class="heroEquation">Consumer equilibrium: MRS<sub>xy</sub> = P<sub>x</sub>/P<sub>y</sub></div><div class="feedback show good">All six Demand missions complete. Next stop: Demand Final Boss / Elasticity.</div>`;
+    m.innerHTML=`<div class="eyebrow">Demand unit complete</div><h1>Consumer Choice Review</h1><p class="big">You built the entire ordinal utility model from ordinary choices.</p><div class="grid2"><div class="definition"><b>Preferences</b><p>Ordinal ranking → indifference curves → MRS → diminishing MRS.</p></div><div class="definition"><b>Constraint</b><p>Income + prices → budget line → highest attainable IC.</p></div></div><div class="heroEquation">Consumer equilibrium: MRS<sub>xy</sub> = P<sub>x</sub>/P<sub>y</sub></div><div class="feedback show good">All six Demand missions complete. Next stop: Demand Comprehensive Practice / Elasticity.</div>`;
   }
   bindJargon();save();
 }

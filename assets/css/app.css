@@ -125,3 +125,48 @@ body{background:
 
 @media(max-width:900px){.reviewShell{grid-template-columns:1fr}.reviewSide{position:static;display:flex;overflow:auto}.reviewSide a{white-space:nowrap}.bankControls{grid-template-columns:1fr 1fr}.unitIntroGrid{grid-template-columns:1fr}.quickActions{grid-template-columns:1fr}}
 @media(max-width:650px){.summaryGrid,.definitionGrid{grid-template-columns:1fr}.mistake{grid-template-columns:1fr}.bankControls{grid-template-columns:1fr}.reviewSection{border-radius:18px}.bankQuestionHead{display:grid}.unitTools{grid-template-columns:1fr}}
+
+
+/* ===== v26 Layout hardening + content-first UI ===== */
+html,body{max-width:100%;overflow-x:hidden}
+.site,.card,.hero,.section,.reviewSection,.unitHeroPanel,.unitStatus,.missionCard,.quickAction,.bankQuestion{min-width:0;max-width:100%}
+h1,h2,h3,h4,p,li,b,strong,span,.term,.sceneTitle,.event,.equation,.definition,.formal,.callout,.board,.paperCard,.feedback,.helpBox,.answerLine,.sourceBadge{overflow-wrap:anywhere;word-break:normal;hyphens:auto}
+h1{font-size:clamp(32px,6vw,60px);line-height:1.02}
+h2{font-size:clamp(25px,4vw,40px);line-height:1.08}
+.hero h1{max-width:100%}.hero .big{max-width:780px}
+.equation{font-size:clamp(22px,4.4vw,44px);line-height:1.18;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.definition .term{font-size:clamp(19px,3vw,24px);line-height:1.2}
+.sceneTitle,.event{line-height:1.15}
+.grid2>*,.grid3>*,.plotGrid>*,.compare>*,.courseGrid>*,.quickActions>*,.unitIntroGrid>*,.unitTools>*,.summaryGrid>*,.definitionGrid>*,.bankControls>*{min-width:0}
+.missionCard{padding-right:52px}.missionCard h3{font-size:clamp(22px,2.7vw,30px);line-height:1.12;overflow-wrap:anywhere}.missionCard p{line-height:1.45}
+.unitStatus b{font-size:clamp(22px,2.8vw,30px);line-height:1.15}.unitStatus span,.unitTool span{overflow-wrap:anywhere}
+.unitFacts{display:grid;gap:8px;margin:12px 0}.unitFact{padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);color:#dbe4f1;font-size:13px}.unitFact b{font-size:13px}
+.tableWrap{display:block;width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+.table,.jargonTable,.masterTable{max-width:none}.table th,.table td,.jargonTable th,.jargonTable td,.masterTable th,.masterTable td{overflow-wrap:normal;word-break:normal}
+.chartwrap{width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden}.chartwrap svg{min-width:0;max-width:100%;height:auto}
+img,video,canvas,svg{max-width:100%;height:auto}
+.btn,.ans,.navBtn,.pill,.themeToggle,.unitTool,.quickAction{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.pageJump,select,input{max-width:100%;min-width:0}
+.productNav{max-width:100%;overflow-x:auto;scrollbar-width:thin}.productNav a{flex:0 0 auto;white-space:nowrap}
+.examLensTop,.sectionHeader,.bankQuestionHead{min-width:0}.examLensHint{overflow-wrap:anywhere}
+.keyword,.chip,.tag,.bankTag{max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:left}
+.brand{max-width:100%;overflow-wrap:anywhere}
+@media(max-width:700px){
+ .site{padding-left:12px;padding-right:12px}.hero{padding-top:34px}.heroMeta{gap:6px}.heroMeta span{font-size:11px}
+ .missionCard{padding:19px 46px 19px 19px;min-height:0}.missionCard::after{right:16px;bottom:16px}
+ .unitHeroPanel,.unitStatus{padding:18px}.reviewSection{padding:19px}
+ .sectionHeader{display:block}.sectionHeader p{margin-top:8px}
+ .paperCard,.questionCard,.panel,.scene,.board,.definition{max-width:100%}
+ .table{min-width:520px}.jargonTable,.masterTable{min-width:680px}
+}
+@media(max-width:390px){
+ h1{font-size:30px}.card{padding:16px}.top{gap:8px}.brand{font-size:13px}.brand::before{width:28px;height:28px;margin-right:7px}
+ .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.stats>*{justify-content:center;min-width:0}
+ .missionNav{grid-template-columns:1fr}.missionNav .pageJump{grid-column:auto}.actions{grid-template-columns:1fr}
+ .missionCard h3{font-size:21px}.equation{font-size:21px}
+}
+
+/* v26 overflow containment follow-up */
+.panel,.choiceCard,.questionCard,.scene,.board,.definition,.paperCard{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.panel{overflow-x:auto}
+@media(max-width:390px){.actions{display:grid;grid-template-columns:1fr}.actions .btn{width:100%}}

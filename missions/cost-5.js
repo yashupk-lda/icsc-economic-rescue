@@ -21,11 +21,11 @@ $('sound').onclick=()=>{state.sound=!state.sound;save();header()};
 $('pageJump').onchange=e=>{state.i=+e.target.value;save();render()};
 function render(){header();const t=screens[state.i],m=$('main');
 if(t==='hook')m.innerHTML=`
-<div class='eyebrow'>Cost & Revenue • Mission 5</div><h1>Build the right size</h1>
+<div class='eyebrow'>Cost & Revenue • Mission 5</div><h1>Long-run Cost Curves</h1>
 <div class='scene'><div class='sceneTitle'>Long run = choose the plant you want.</div><p>A cinema owner can build a small theatre, a medium theatre, or a huge multiplex. The question becomes: which size is cheapest for each output level?</p></div>`;if(t==='longRun')m.innerHTML=`
 <div class='eyebrow'>Time concept again</div><h2>What makes the long run different?</h2>
 <div class='compare'><div class='panel'><h3>Short run</h3><ul><li>At least one factor fixed</li><li>Plant size fixed</li><li>TFC exists</li></ul></div><div class='op'>VS</div><div class='panel'><h3>Long run</h3><ul><li>All factors variable</li><li>Plant size can change</li><li>Firm chooses the most suitable scale</li></ul></div></div>`;if(t==='plants')m.innerHTML=`
-<div class='eyebrow'>Think like a business owner</div><h2>Different plants for different output levels</h2>
+<div class='eyebrow'>Plant size and output</div><h2>Different plants for different output levels</h2>
 <div class='grid3'><div class='panel'><h3>Small plant</h3><p>Best when output demand is low.</p></div><div class='panel'><h3>Medium plant</h3><p>Best for medium output.</p></div><div class='panel'><h3>Large plant</h3><p>Best when output demand is high.</p></div></div>
 <div class='callout'>Each plant has its own short-run average cost curve. In the long run, the firm can jump to the cheapest plant.</div>`;if(t==='lac')m.innerHTML=`
 <div class='eyebrow'>The famous envelope</div><h2>Long-run Average Cost (LAC)</h2>
@@ -41,7 +41,7 @@ if(t==='hook')m.innerHTML=`
 <div class='eyebrow'>Why LAC rises later</div><h2>Diseconomies of scale</h2>
 <div class='grid3'><div class='panel'><h3>Bureaucracy</h3><p>Too many layers of management.</p></div><div class='panel'><h3>Communication problems</h3><p>Information takes longer to move.</p></div><div class='panel'><h3>Coordination issues</h3><p>Departments stop working smoothly together.</p></div></div>
 <div class='callout'>Once these problems dominate, average cost rises.</div>`;if(t==='uShape')m.innerHTML=`
-<div class='eyebrow'>Put it together</div><h2>Why is the LAC curve U-shaped?</h2>
+<div class='eyebrow'>Long-run average cost</div><h2>Why is the LAC curve U-shaped?</h2>
 <div class='chartwrap panel'><svg viewBox='0 0 460 300'><line x1='60' y1='20' x2='60' y2='250' class='chartAxis'/><line x1='60' y1='250' x2='420' y2='250' class='chartAxis'/><path d='M90 190 C145 120,210 105,260 125 S335 185,390 220' class='chartCurve'/><text x='15' y='30' class='chartLabel'>Cost</text><text x='315' y='280' class='chartLabel'>Output</text><text x='340' y='210' class='chartLabel'>LAC</text><text x='90' y='225' class='chartLabel'>economies</text><text x='300' y='105' class='chartLabel'>diseconomies</text></svg></div>`;if(t==='numerical')m.innerHTML=`
 <div class='eyebrow'>Practical numerical</div><h2>Which plant should the firm use?</h2>
 <div class='tableWrap panel'><table class='table'><tr><th>Output 100 units</th><th>Average cost</th></tr><tr><td>Small plant</td><td>₹18</td></tr><tr><td>Medium plant</td><td>₹15</td></tr><tr><td>Large plant</td><td>₹22</td></tr></table></div>
@@ -49,12 +49,12 @@ if(t==='hook')m.innerHTML=`
 <div class='eyebrow'>Board Answer Coach</div><h2>“Why is the LAC curve U-shaped?”</h2>
 <div class='board'><p>The LAC curve is U-shaped because at first average cost falls due to economies of scale such as technical, managerial and purchasing economies. After a point, average cost rises due to diseconomies of scale such as managerial inefficiency, communication problems and difficulties in coordination.</p></div>
 <div class='questionCard'><b>The strongest feature of this answer is that it:</b><div class='answers'><button class='ans q' data-v='cause'>explains both the falling and rising portions with causes.</button><button class='ans q' data-v='shape'>only mentions the shape.</button><button class='ans q' data-v='formula'>uses a formula.</button></div><div id='fb' class='feedback'></div></div>`;if(t==='boss')m.innerHTML=`
-<div class='eyebrow'>Final Boss</div><h2>The growing bakery</h2>
+<div class='eyebrow'>Comprehensive Practice</div><h2>The growing bakery</h2>
 <div class='caseFile'><b>CASE</b><p>A bakery expands output by installing larger ovens, hiring specialized managers and buying flour in bulk. After much further expansion, communication delays and supervision problems begin increasing average cost.</p></div>
 <div class='questionCard'><b>Which interpretation is best?</b><div class='answers'><button class='ans q' data-v='full'>The fall in cost reflects economies of scale; the later rise reflects diseconomies of scale, giving LAC a U-shape.</button><button class='ans q' data-v='wrong1'>All expansion always lowers average cost forever.</button><button class='ans q' data-v='wrong2'>These are short-run fixed costs only.</button></div><div id='fb' class='feedback'></div></div>`;if(t==='finish')m.innerHTML=`
 <div class='eyebrow'>Mission complete</div><h1>You now understand long-run costs and scale.</h1>
 <div class='coverageStrip'><p>✓ long run &nbsp; ✓ LAC &nbsp; ✓ LMC &nbsp; ✓ economies of scale &nbsp; ✓ diseconomies of scale</p></div>
 <p class='big'>Next: revenue—how much money comes in when the firm sells its output.</p><a class='btn primary' href='cost.html'>Back to Cost & Revenue map →</a>`;
-if(t==='lmc')quiz('min','Correct. The average–marginal logic is the same in the long run.','Look carefully at the economic relationship being tested.');if(t==='numerical')quiz('medium','Correct. The long run selects the plant with the lowest average cost for that output.','Look carefully at the economic relationship being tested.');if(t==='board')quiz('cause','Exactly. It explains the two halves of the U-shape rather than just naming them.','Look carefully at the economic relationship being tested.');if(t==='boss')quiz('full','Boss cleared. The story describes both economies and later diseconomies of scale.','Look carefully at the economic relationship being tested.');
+if(t==='lmc')quiz('min','Correct. The average–marginal logic is the same in the long run.','Look carefully at the economic relationship being tested.');if(t==='numerical')quiz('medium','Correct. The long run selects the plant with the lowest average cost for that output.','Look carefully at the economic relationship being tested.');if(t==='board')quiz('cause','Exactly. It explains the two halves of the U-shape rather than just naming them.','Look carefully at the economic relationship being tested.');if(t==='boss')quiz('full','Correct. The story describes both economies and later diseconomies of scale.','Look carefully at the economic relationship being tested.');
 save();header()}
 render();

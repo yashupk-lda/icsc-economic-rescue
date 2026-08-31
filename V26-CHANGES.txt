@@ -1,0 +1,21 @@
+ECONOMICS RESCUE v26 — FORMATTING + COPY CLEANUP
+
+Upload the CONTENTS of this build to the GitHub repository root.
+
+Changes:
+- Hardened responsive layout and overflow handling.
+- Long headings, equations, answer choices, cards and navigation wrap safely.
+- Wide tables and charts stay contained and scroll inside their own cards when needed.
+- Mobile action controls stack cleanly on narrow screens.
+- Replaced process/AI-style landing-page copy with concise content descriptions.
+- Renamed all 20 missions with syllabus/topic names.
+- Removed "boss", "unlocked", "tamer", "detective" and similar gimmicky headings where they appeared as course UI labels.
+- Updated homepage counts to 20 missions and 68 practice questions.
+- Simplified Question Bank source labels and landing copy.
+- Kept the existing examples, interactions, theory and lesson content.
+
+Validation:
+- All shared JavaScript files: node --check PASS
+- All 20 mission JavaScript files: node --check PASS
+- Local HTML href/src reference check: PASS
+- CSS brace balance: PASS

@@ -21,7 +21,7 @@ $('sound').onclick=()=>{state.sound=!state.sound;save();header()};
 $('pageJump').onchange=e=>{state.i=+e.target.value;save();render()};
 function render(){header();const t=screens[state.i],m=$('main');
 if(t==='hook')m.innerHTML=`
-<div class='eyebrow'>Cost & Revenue • Mission 4</div><h1>Why the curves behave that way</h1>
+<div class='eyebrow'>Cost & Revenue • Mission 4</div><h1>Short-run Cost Curves</h1>
 <div class='scene'><div class='sceneTitle'>At first, cost per unit can fall.</div><p>Workers specialize, machines are used better, and resources are coordinated more efficiently. Later, crowding and bottlenecks push cost up.</p></div>
 <div class='callout'><b>Today’s goal:</b> stop memorizing U-shapes and actually understand why they appear.</div>`;if(t==='efficiency')m.innerHTML=`
 <div class='eyebrow'>First half of the U</div><h2>Why do AVC and AC fall at first?</h2>
@@ -35,11 +35,11 @@ if(t==='hook')m.innerHTML=`
 <div class='eyebrow'>The key relationship</div><h2>How does MC affect AC?</h2>
 <div class='grid2'><div class='panel'><h3>If MC &lt; AC</h3><p>The next unit costs less than the current average, so the average falls.</p></div><div class='panel'><h3>If MC &gt; AC</h3><p>The next unit costs more than the current average, so the average rises.</p></div></div>
 <div class='panel'><h3>If MC = AC</h3><p>The next unit costs exactly the same as the current average, so AC is at its minimum point.</p></div>`;if(t==='marks')m.innerHTML=`
-<div class='eyebrow'>Analogy that makes it click</div><h2>Your average marks = AC. Your next test score = MC.</h2>
+<div class='eyebrow'>Average–marginal relationship</div><h2>Your average marks = AC. Your next test score = MC.</h2>
 <div class='grid3'><div class='panel'><h3>Average = 70, next score = 90</h3><p>Average rises.</p></div><div class='panel'><h3>Average = 70, next score = 50</h3><p>Average falls.</p></div><div class='panel'><h3>Average = 70, next score = 70</h3><p>Average stays the same.</p></div></div>
 <div class='callout'>Exactly the same logic explains why MC cuts AC at AC’s minimum point.</div>
 <div class='questionCard'><b>If MC is below AC, what happens to AC?</b><div class='answers'><button class='ans q' data-v='falls'>AC falls</button><button class='ans q' data-v='rises'>AC rises</button><button class='ans q' data-v='same'>AC stays unchanged forever</button></div><div id='fb' class='feedback'></div></div>`;if(t==='mcCuts')m.innerHTML=`
-<div class='eyebrow'>Graph proof</div><h2>Where does MC cut AVC and AC?</h2>
+<div class='eyebrow'>Cost-curve relationship</div><h2>Where does MC cut AVC and AC?</h2>
 <div class='chartwrap panel'><svg viewBox='0 0 520 320'><line x1='60' y1='20' x2='60' y2='270' class='chartAxis'/><line x1='60' y1='270' x2='470' y2='270' class='chartAxis'/><path d='M90 210 C145 165,205 150,245 160 S335 210,430 245' class='chartCurve'/><path d='M90 180 C150 145,220 125,275 135 S365 175,445 220' class='secondLine budgetLine'/><path d='M85 245 C150 230,215 110,275 136 S365 235,450 263' class='budgetLine'/><circle cx='275' cy='136' r='6' class='chartDot'/><circle cx='245' cy='160' r='6' class='chartDot'/><text x='14' y='30' class='chartLabel'>Cost</text><text x='355' y='300' class='chartLabel'>Output</text><text x='420' y='246' class='chartLabel'>AVC</text><text x='425' y='220' class='chartLabel'>AC</text><text x='417' y='272' class='chartLabel'>MC</text></svg></div>
 <div class='callout'>MC cuts <b>AVC</b> at AVC’s minimum point and cuts <b>AC</b> at AC’s minimum point.</div>`;if(t==='numerical')m.innerHTML=`
 <div class='eyebrow'>Numerical thinking</div><h2>If AC = ₹40 and MC = ₹32, what must happen?</h2>
@@ -50,12 +50,12 @@ if(t==='hook')m.innerHTML=`
 <div class='eyebrow'>Board Answer Coach</div><h2>“State the relationship between AC and MC.”</h2>
 <div class='board'><p>When marginal cost is less than average cost, average cost falls. When marginal cost is greater than average cost, average cost rises. Therefore, marginal cost cuts average cost at the minimum point of the average cost curve.</p></div>
 <div class='questionCard'><b>What extra word makes the answer stronger?</b><div class='answers'><button class='ans q' data-v='therefore'>“Therefore,” because it shows the conclusion follows from the relationship.</button><button class='ans q' data-v='always'>“Always,” because it sounds confident.</button><button class='ans q' data-v='basically'>“Basically,” because it sounds casual.</button></div><div id='fb' class='feedback'></div></div>`;if(t==='boss')m.innerHTML=`
-<div class='eyebrow'>Final Boss</div><h2>Graph detective</h2>
+<div class='eyebrow'>Comprehensive Practice</div><h2>Graph Application</h2>
 <div class='caseFile'><b>CASE</b><p>A firm observes that the cost of producing one more unit has fallen below its current average variable cost and average cost.</p></div>
 <div class='questionCard'><b>Which statement follows?</b><div class='answers'><button class='ans q' data-v='bothfall'>Both AVC and AC will tend to fall.</button><button class='ans q' data-v='rise'>Both must rise.</button><button class='ans q' data-v='nothing'>No inference can be made.</button></div><div id='fb' class='feedback'></div></div>`;if(t==='finish')m.innerHTML=`
 <div class='eyebrow'>Mission complete</div><h1>You now understand the logic behind the cost curves.</h1>
 <div class='coverageStrip'><p>✓ U-shapes &nbsp; ✓ why costs fall and rise &nbsp; ✓ MC–AC relationship &nbsp; ✓ MC cuts AC and AVC at their minima</p></div>
 <p class='big'>Next: the long run, plant size, LAC, LMC and scale economies.</p><a class='btn primary' href='cost.html'>Back to Cost & Revenue map →</a>`;
-if(t==='marks')quiz('falls','Correct. A next-unit cost below the average pulls the average down.','Look carefully at the economic relationship being tested.');if(t==='numerical')quiz('down','Exactly. MC below AC pulls the average cost down.','Look carefully at the economic relationship being tested.');if(t==='assertion')quiz('both','Correct. The reason gives the exact average logic behind the assertion.','Look carefully at the economic relationship being tested.');if(t==='board')quiz('therefore','Yes. It links the rule to the graph conclusion.','Look carefully at the economic relationship being tested.');if(t==='boss')quiz('bothfall','Boss cleared. A marginal value below an average pulls that average down.','Look carefully at the economic relationship being tested.');
+if(t==='marks')quiz('falls','Correct. A next-unit cost below the average pulls the average down.','Look carefully at the economic relationship being tested.');if(t==='numerical')quiz('down','Exactly. MC below AC pulls the average cost down.','Look carefully at the economic relationship being tested.');if(t==='assertion')quiz('both','Correct. The reason gives the exact average logic behind the assertion.','Look carefully at the economic relationship being tested.');if(t==='board')quiz('therefore','Yes. It links the rule to the graph conclusion.','Look carefully at the economic relationship being tested.');if(t==='boss')quiz('bothfall','Correct. A marginal value below an average pulls that average down.','Look carefully at the economic relationship being tested.');
 save();header()}
 render();
